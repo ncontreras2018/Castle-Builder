@@ -14,6 +14,8 @@ public class Map {
 	private LockedToGrid[][] grid;
 	
 	private ArrayList<UnlockedFromGrid> unlockedObjects;
+	
+	private ArrayList<Tasks> jobQueue;
 
 	public Map(int rows, int cols, int tileSize) {
 
@@ -23,9 +25,20 @@ public class Map {
 		
 		unlockedObjects = new ArrayList<UnlockedFromGrid>();
 		
+		jobQueue = new ArrayList<Tasks>();
+		
 		fillWithDirt();
 	}
 
+	public int numRows() {
+		System.out.println("rows " + grid.length);
+		return grid.length;
+	}
+	
+	public int numCols() {
+		return grid[0].length;
+	}
+	
 	private void fillWithDirt() {
 		for (int row = 0; row < grid.length; row++) {
 			for (int col = 0; col < grid[row].length; col++) {
