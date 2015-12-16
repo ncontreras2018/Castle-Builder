@@ -17,18 +17,24 @@ public class MouseListener implements java.awt.event.MouseListener,
 
 	private final double ZOOM_SPEED = -.1;
 
-	private int[] mouseDownPoint;
-
-	private boolean mousePressed;
-
 	public MouseListener(GamePanel gp) {
 		gamePanel = gp;
-
-		mouseDownPoint = new int[2];
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+
+		int[] adjustedPos = gamePanel.adjustPointForCamera(e.getX(), e.getY());
+
+		System.out.println("X: " + adjustedPos[0] + " Y: " + adjustedPos[1]);
+
+		int[] rowCol = Util.getRowColAt(adjustedPos[0], adjustedPos[1]);
+
+		System.out.println("Row: " + rowCol[0] + " Col: " + rowCol[1]);
+
+		gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][2] = new Construction(
+				rowCol[0], rowCol[1], 1, 5, new Wall(rowCol[0], rowCol[1]),
+				true);
 	}
 
 	@Override
@@ -41,53 +47,29 @@ public class MouseListener implements java.awt.event.MouseListener,
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (!mousePressed) {
-			mouseDownPoint = new int[] { e.getY(), e.getY() };
-		}
-		mousePressed = true;
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		mousePressed = false;
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		
-		System.out.println("MousePressed: " + mousePressed);
-		
-		gamePanel.getMap().removeTemporaryItems();
-
-		int[] mouseStart = mouseDownPoint;
-		int[] mouseEnd = new int[] {e.getX(), e.getY()};
-		
-		System.out.println("Mouse Loc: " + mouseEnd[0] + ", " + mouseEnd[1]);
-
-		if (Util.sameRow(mouseStart[1], mouseEnd[1])) {
-
-			int[] start = Util
-					.getRowColAt(mouseStart[0], mouseStart[1]);
-			int[] end = Util.getRowColAt(mouseStart[0], mouseStart[1]);
-
-			int curCol = start[1];
-
-			while (curCol <= end[1]) {
-				
-				System.out.println("Adding Temp Construction to : " + start[1] + ", " + curCol);
-				
-				gamePanel.getMap().getGrid()[start[0]][curCol][2] = new Construction(
-						start[0], curCol, 1, 5, new Wall(start[0], curCol),
-						false);
-				
-				curCol++;
-			}
-		}
-
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+
+		System.out.println("Unadjusted X: " + e.getX() + " Y: " + e.getY());
+
+		int[] adjustedPos = gamePanel.adjustPointForCamera(e.getX(), e.getY());
+
+		System.out.println("Adjusted X: " + adjustedPos[0] + " Y: " + adjustedPos[1]);
+
+		int[] rowCol = Util.getRowColAt(adjustedPos[0], adjustedPos[1]);
+
+		System.out.println("Row: " + rowCol[0] + " Col: " + rowCol[1]);
+
 	}
 
 	@Override

@@ -39,11 +39,11 @@ abstract public class LockedToGrid extends Existent {
 	}
 	
 	public double getX() {
-		return col / MAP.getTileSize();
+		return col * MAP.getTileSize();
 	}
 	
 	public double getY() {
-		return row / MAP.getTileSize();
+		return row * MAP.getTileSize();
 	}
 	
 	public double getCenterX() {

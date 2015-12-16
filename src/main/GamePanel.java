@@ -6,7 +6,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -26,6 +28,7 @@ public class GamePanel extends JPanel {
 	private int cameraX, cameraY;
 	private double zoom;
 	private final double MIN_ZOOM = .4, MAX_ZOOM = 2;
+	private AffineTransform cameraTransform;
 	
 	private boolean buildingMode;
 
@@ -43,13 +46,28 @@ public class GamePanel extends JPanel {
 	}
 
 	private void setUpCamera() {
-
-		zoom = 1;
-
-		// cameraX = (map.numCols() * map.getTileSize()) - (getWidth() / 2);
-		// cameraY = (map.numRows() * map.getTileSize()) - (getHeight() / 2);
+		cameraX = 500;
+		cameraY = 300;
 
 		zoom = MIN_ZOOM;
+	}
+	
+	public int[] adjustPointForCamera(int oldX, int oldY) {
+		
+		AffineTransform inverse = null;
+		
+		try {
+			inverse = cameraTransform.createInverse();
+		} catch (NoninvertibleTransformException e) {
+			e.printStackTrace();
+		}
+		
+		Point point = new Point(oldX, oldY);
+		
+		inverse.transform(point, point);
+		
+		return new int[] {point.x, point.y};
+		
 	}
 
 	public void moveCamera(int deltaX, int deltaY) {
@@ -120,16 +138,20 @@ public class GamePanel extends JPanel {
 		g2d.setColor(Color.BLACK);
 
 		g2d.fillRect(0, 0, getWidth(), getHeight());
+		
+		cameraTransform = new AffineTransform();
+		
+		cameraTransform.translate(getWidth() / 2, getHeight() / 2);
+		
+		cameraTransform.scale(zoom, zoom);
+		
+		cameraTransform.translate(-getWidth() / 2, -getHeight() / 2);
 
-		g2d.translate(getWidth() / 2, getHeight() / 2);
+		cameraTransform.translate(-cameraX, -cameraY);
 
-		g2d.scale(zoom, zoom);
-
-		g2d.translate(-getWidth() / 2, -getHeight() / 2);
-
-		g2d.translate(-cameraX, -cameraY);
-
-		g2d.translate(getWidth() / 2, getHeight() / 2);
+		cameraTransform.translate(getWidth() / 2, getHeight() / 2);
+		
+		g2d.transform(cameraTransform);
 
 		for (LockedToGrid[][] row : map.getGrid()) {
 			for (LockedToGrid cur[] : row) {

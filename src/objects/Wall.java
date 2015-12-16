@@ -18,7 +18,7 @@ public class Wall extends VisibleObject implements Drawable  {
 
 		g2d.setColor(Color.GRAY);
 
-		g2d.fillRect(col, row, MAP.getTileSize(),
+		g2d.fillRect((int) getX(), (int) getY(), MAP.getTileSize(),
 				MAP.getTileSize());
 	}
 

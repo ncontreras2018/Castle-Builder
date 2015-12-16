@@ -34,11 +34,11 @@ public class Main {
 		
 		MouseListener ml = new MouseListener(panel);
 		
-		panel.getFrame().addMouseListener(ml);
+		panel.addMouseListener(ml);
 		
-		panel.getFrame().addMouseMotionListener(ml);
+		panel.addMouseMotionListener(ml);
 		
-		panel.getFrame().addMouseWheelListener(ml);
+		panel.addMouseWheelListener(ml);
 		
 		GameThread gameThread = new GameThread(60, panel);
 		
