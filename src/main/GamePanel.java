@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import objects.VisibleObject;
+import tasks.Construction;
 import abstractClasses.LockedToGrid;
 import abstractClasses.UnlockedFromGrid;
 
@@ -24,24 +26,28 @@ public class GamePanel extends JPanel {
 	private int cameraX, cameraY;
 	private double zoom;
 	private final double MIN_ZOOM = .4, MAX_ZOOM = 2;
+	
+	private boolean buildingMode;
 
 	public GamePanel(int width, int height, Map map) {
 
 		this.map = map;
-		
+
 		setUpFrame(width, height);
 
 		setUpCamera();
+	}
+	
+	public Map getMap() {
+		return map;
 	}
 
 	private void setUpCamera() {
 
 		zoom = 1;
-		
-		System.out.println("Calc: " + map.numRows() * map.getTileSize());
 
-//		cameraX = (map.numCols() * map.getTileSize()) - (getWidth() / 2);
-//		cameraY = (map.numRows() * map.getTileSize()) - (getHeight() / 2);
+		// cameraX = (map.numCols() * map.getTileSize()) - (getWidth() / 2);
+		// cameraY = (map.numRows() * map.getTileSize()) - (getHeight() / 2);
 
 		zoom = MIN_ZOOM;
 	}
@@ -76,15 +82,30 @@ public class GamePanel extends JPanel {
 	}
 
 	public void update() {
-		for (LockedToGrid[] row : map.getGrid()) {
-			for (LockedToGrid cur : row) {
-				cur.update();
+		for (LockedToGrid[][] row : map.getGrid()) {
+			for (LockedToGrid cur[] : row) {
+				for (LockedToGrid layer : cur) {
+					if (layer != null) {
+						layer.update();
+					}
+				}
 			}
 		}
 
 		for (UnlockedFromGrid cur : map.getUnlockedObjects()) {
 			cur.update();
 		}
+		
+	}
+	
+	
+	
+	public void toggleBuildingMode() {
+		buildingMode = !buildingMode;
+	}
+	
+	public boolean inBuildingMode() {
+		return buildingMode;
 	}
 
 	public JFrame getFrame() {
@@ -93,10 +114,6 @@ public class GamePanel extends JPanel {
 
 	@Override
 	public void paintComponent(Graphics g) {
-
-		System.out.println(cameraX + " " + cameraY);
-
-		System.out.println(zoom);
 
 		Graphics2D g2d = (Graphics2D) g;
 
@@ -114,14 +131,20 @@ public class GamePanel extends JPanel {
 
 		g2d.translate(getWidth() / 2, getHeight() / 2);
 
-		for (LockedToGrid[] row : map.getGrid()) {
-			for (LockedToGrid cur : row) {
-				cur.draw(g2d);
+		for (LockedToGrid[][] row : map.getGrid()) {
+			for (LockedToGrid cur[] : row) {
+				for (LockedToGrid layer : cur) {
+					if (layer != null) {
+						if (layer instanceof Drawable) {
+							((Drawable) layer).draw(g2d, false);
+						}
+					}
+				}
 			}
 		}
 
 		for (UnlockedFromGrid cur : map.getUnlockedObjects()) {
-			cur.draw(g2d);
+			cur.draw(g2d, false);
 		}
 	}
 }

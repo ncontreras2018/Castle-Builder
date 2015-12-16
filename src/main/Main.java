@@ -1,11 +1,14 @@
 package main;
 
+import people.Worker;
 import listeners.KeyListener;
 import listeners.MouseListener;
 import abstractClasses.Existent;
 import threads.ControlThread;
 import threads.GameThread;
 import threads.GraphicsThread;
+import threads.PathfindingThread;
+import util.Util;
 
 public class Main {
 
@@ -20,6 +23,8 @@ public class Main {
 		Map map = new Map(mapRows, mapCols, tileSize);
 		
 		Existent.setMap(map);
+		
+		Util.setMap(map);
 		
 		GamePanel panel = new GamePanel(windowWidth, windowHeight, map);
 		
@@ -41,11 +46,17 @@ public class Main {
 		
 		ControlThread controlThread = new ControlThread(30, panel, kl, ml);
 		
+		PathfindingThread pathfindingThread = new PathfindingThread(map);
+		
 		gameThread.start();
 		
 		graphicsThread.start();
 		
 		controlThread.start();
+		
+		pathfindingThread.start();
+		
+		map.getUnlockedObjects().add(new Worker(600,600, 1, 1));
 		
 	}
 

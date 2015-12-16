@@ -12,7 +12,7 @@ public class PathfindingThread extends Thread {
 	private int[][] pathMesh;
 
 	private ArrayList<Object[]> pathFindingRequests;
-	
+
 	private HashMap<UnlockedFromGrid, ArrayList<int[]>> pathsFound;
 
 	public PathfindingThread(Map map) {
@@ -21,8 +21,8 @@ public class PathfindingThread extends Thread {
 		pathsFound = new HashMap<UnlockedFromGrid, ArrayList<int[]>>();
 	}
 
-	public void requestPath(UnlockedFromGrid objectNeedingPath, int targX,
-			int targY) {
+	public void requestPath(UnlockedFromGrid objectNeedingPath, double targX,
+			double targY) {
 		pathFindingRequests
 				.add(new Object[] { objectNeedingPath, targX, targY });
 	}
@@ -32,24 +32,42 @@ public class PathfindingThread extends Thread {
 		while (true) {
 			if (pathFindingRequests.size() > 0) {
 				Object[] currentRequest = pathFindingRequests.remove(0);
-				
-				ArrayList<int[]> pathFound = getPath((UnlockedFromGrid) currentRequest[0], new int[] {(int) currentRequest[1], (int) currentRequest[2]});
-				
+
+				ArrayList<int[]> pathFound = getPath(
+						(UnlockedFromGrid) currentRequest[0], new double[] {
+								(int) currentRequest[1],
+								(int) currentRequest[2] });
+
 				pathsFound.put((UnlockedFromGrid) currentRequest[0], pathFound);
 			}
 		}
 	}
-	
+
 	public ArrayList<int[]> getPathFor(UnlockedFromGrid needsPath) {
-		return pathsFound.remove(needsPath);
+		return pathsFound.get(needsPath);
 	}
 
-	public ArrayList<int[]> getPath(UnlockedFromGrid needsPath,
-			int[] targLocation) {
+	public void removePathFor(UnlockedFromGrid removeFrom) {
+		pathsFound.remove(removeFrom);
+	}
+
+	public int[] getFinalDestFor(UnlockedFromGrid pathfindingObject) {
+
+		if (pathsFound.get(pathfindingObject) == null
+				|| pathsFound.get(pathfindingObject).isEmpty()) {
+			return null;
+		} else {
+			return pathsFound.get(pathfindingObject).get(
+					pathsFound.get(pathfindingObject).size() - 1);
+		}
+	}
+
+	private ArrayList<int[]> getPath(UnlockedFromGrid needsPath,
+			double[] targLocation) {
 		pathMesh = new int[map.getGrid().length][map.getGrid()[0].length];
 
-		int destRow = targLocation[1];
-		int destCol = targLocation[0];
+		int destRow = (int) Math.round(targLocation[1]);
+		int destCol = (int) Math.round(targLocation[0]);
 
 		int objectRow = (int) Math.round(needsPath.getLocation()[1]);
 		int objectCol = (int) Math.round(needsPath.getLocation()[1]);

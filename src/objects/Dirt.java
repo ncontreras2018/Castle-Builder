@@ -1,11 +1,13 @@
 package objects;
 
+import interfaces.Drawable;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 
 import abstractClasses.LockedToGrid;
 
-public class Dirt extends LockedToGrid {
+public class Dirt extends LockedToGrid implements Drawable {
 	
 	private final double COLOR_DIFFERENCE;
 
@@ -16,7 +18,7 @@ public class Dirt extends LockedToGrid {
 	}
 
 	@Override
-	public void draw(Graphics2D g2d) {
+	public void draw(Graphics2D g2d, boolean isTransparent) {
 		
 		if (COLOR_DIFFERENCE > .66) {
 			g2d.setColor(Color.GREEN.darker().darker());
@@ -26,14 +28,14 @@ public class Dirt extends LockedToGrid {
 			g2d.setColor(Color.GREEN);
 		}
 
-		g2d.fillRect(location[0] * MAP.getTileSize(),
-				location[1] * MAP.getTileSize(), MAP.getTileSize(),
+		g2d.fillRect(col * MAP.getTileSize(),
+				row * MAP.getTileSize(), MAP.getTileSize(),
 				MAP.getTileSize());
 		
 		g2d.setColor(Color.BLACK);
 		
-		g2d.drawRect(location[0] * MAP.getTileSize(),
-				location[1] * MAP.getTileSize(), MAP.getTileSize(),
+		g2d.drawRect(col * MAP.getTileSize(),
+				row * MAP.getTileSize(), MAP.getTileSize(),
 				MAP.getTileSize());
 	}
 
