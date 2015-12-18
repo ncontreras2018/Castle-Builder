@@ -3,7 +3,9 @@ package tasks;
 import java.util.ArrayList;
 
 import abstractClasses.LockedToGrid;
+import abstractClasses.UnlockedFromGrid;
 import people.Person;
+import util.Util;
 
 public abstract class Task extends LockedToGrid {
 
@@ -42,11 +44,17 @@ public abstract class Task extends LockedToGrid {
 	}
 
 	public static boolean hasApplicableTaskFor(Person p) {
+		
+		System.out.println("Global Task List Length: " + globalTaskList.size());
+		
 		for (int i = 0; i < globalTaskList.size(); i++) {
 			Task cur = globalTaskList.get(i);
 
+			System.out.println("Checking Task: " + cur);
+
 			if (cur.getTypeNeeded().isInstance(p)
 					&& cur.getPlayer() == p.getPlayer()) {
+				System.out.println("Task Good");
 				return true;
 			}
 		}
@@ -93,7 +101,7 @@ public abstract class Task extends LockedToGrid {
 	@SuppressWarnings("unchecked")
 	public Class<Person> getTypeNeeded() {
 		try {
-			return (Class<Person>) Class.forName("Person");
+			return (Class<Person>) Class.forName("people.Person");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -114,5 +122,21 @@ public abstract class Task extends LockedToGrid {
 
 	public void doWork(long timeSpent) {
 		this.timeSpent += timeSpent;
+	}
+	
+	public boolean isAtLocation(UnlockedFromGrid object) {
+		return Util.isAdjacentTo(object, this);
+	}
+
+	@Override
+	public String toString() {
+		String toReturn = super.toString();
+
+		toReturn += " Location { Row:" + getRow() + " Col: " + getCol()
+				+ " } Type Needed: " + getTypeNeeded() + " Person Assigned: "
+				+ personAssigned + " Time Cost: " + timeCost + " Work Done "
+				+ timeSpent;
+		
+		return toReturn;
 	}
 }

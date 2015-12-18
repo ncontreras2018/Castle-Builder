@@ -33,7 +33,6 @@ public class Map {
 	}
 
 	public int numRows() {
-		System.out.println("rows " + grid.length);
 		return grid.length;
 	}
 	

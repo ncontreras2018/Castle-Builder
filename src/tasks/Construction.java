@@ -3,8 +3,10 @@ package tasks;
 import interfaces.Drawable;
 
 import java.awt.Graphics2D;
+import java.io.ObjectInputStream.GetField;
 
 import objects.VisibleObject;
+import people.Person;
 
 public class Construction extends Task implements Drawable {
 
@@ -35,6 +37,17 @@ public class Construction extends Task implements Drawable {
 	@Override
 	public int getPriorty() {
 		return isPlaced ? 3 : 0;
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public Class<Person> getTypeNeeded() {
+		try {
+			return (Class<Person>) Class.forName("people.Worker");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

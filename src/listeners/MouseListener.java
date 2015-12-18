@@ -7,6 +7,7 @@ import java.awt.event.MouseWheelListener;
 
 import objects.Wall;
 import tasks.Construction;
+import tasks.Task;
 import util.Util;
 import main.GamePanel;
 
@@ -26,15 +27,14 @@ public class MouseListener implements java.awt.event.MouseListener,
 
 		int[] adjustedPos = gamePanel.adjustPointForCamera(e.getX(), e.getY());
 
-		System.out.println("X: " + adjustedPos[0] + " Y: " + adjustedPos[1]);
-
 		int[] rowCol = Util.getRowColAt(adjustedPos[0], adjustedPos[1]);
 
-		System.out.println("Row: " + rowCol[0] + " Col: " + rowCol[1]);
+		Task newTask = new Construction(rowCol[0], rowCol[1], 1, 5, new Wall(
+				rowCol[0], rowCol[1]), true);
 
-		gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][2] = new Construction(
-				rowCol[0], rowCol[1], 1, 5, new Wall(rowCol[0], rowCol[1]),
-				true);
+		gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][2] = newTask;
+
+		Task.addTask(newTask);
 	}
 
 	@Override
@@ -64,7 +64,8 @@ public class MouseListener implements java.awt.event.MouseListener,
 
 		int[] adjustedPos = gamePanel.adjustPointForCamera(e.getX(), e.getY());
 
-		System.out.println("Adjusted X: " + adjustedPos[0] + " Y: " + adjustedPos[1]);
+		System.out.println("Adjusted X: " + adjustedPos[0] + " Y: "
+				+ adjustedPos[1]);
 
 		int[] rowCol = Util.getRowColAt(adjustedPos[0], adjustedPos[1]);
 

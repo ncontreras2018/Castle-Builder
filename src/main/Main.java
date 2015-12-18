@@ -1,5 +1,6 @@
 package main;
 
+import people.Person;
 import people.Worker;
 import listeners.KeyListener;
 import listeners.MouseListener;
@@ -48,6 +49,8 @@ public class Main {
 		
 		PathfindingThread pathfindingThread = new PathfindingThread(map);
 		
+		Person.setPathfinder(pathfindingThread);
+		
 		gameThread.start();
 		
 		graphicsThread.start();
@@ -55,6 +58,12 @@ public class Main {
 		controlThread.start();
 		
 		pathfindingThread.start();
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		map.getUnlockedObjects().add(new Worker(600,600, 1, 1));
 		

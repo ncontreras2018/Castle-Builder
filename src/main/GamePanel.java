@@ -29,8 +29,6 @@ public class GamePanel extends JPanel {
 	private double zoom;
 	private final double MIN_ZOOM = .4, MAX_ZOOM = 2;
 	private AffineTransform cameraTransform;
-	
-	private boolean buildingMode;
 
 	public GamePanel(int width, int height, Map map) {
 
@@ -114,16 +112,6 @@ public class GamePanel extends JPanel {
 			cur.update();
 		}
 		
-	}
-	
-	
-	
-	public void toggleBuildingMode() {
-		buildingMode = !buildingMode;
-	}
-	
-	public boolean inBuildingMode() {
-		return buildingMode;
 	}
 
 	public JFrame getFrame() {

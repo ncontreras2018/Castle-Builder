@@ -33,6 +33,11 @@ public class Util {
 	}
 
 	public static boolean isAdjacentTo(LockedToGrid locked, int[] location) {
+		
+		if (location == null) {
+			return false;
+		}
+		
 		return isAdjacentTo(locked.getCenterX(), locked.getCenterY(),
 				location[0], location[1]);
 	}

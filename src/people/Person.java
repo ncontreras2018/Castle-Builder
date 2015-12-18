@@ -35,7 +35,7 @@ abstract public class Person extends UnlockedFromGrid implements Drawable {
 			doesntDoTasks();
 		}
 	}
-	
+
 	public int getPlayer() {
 		return player;
 	}
@@ -48,38 +48,53 @@ abstract public class Person extends UnlockedFromGrid implements Drawable {
 	 */
 
 	protected boolean shouldDoTasks() {
-		return Task.hasApplicableTaskFor(this);
+		System.out.println("Has Task: " + Task.hasApplicableTaskFor(this)
+				+ " or " + (currentTask != null));
+		return Task.hasApplicableTaskFor(this) || currentTask != null;
 	}
 
 	protected void doTasks() {
+		
+		System.out.println("-----------------------------------");
+
+		System.out.println("Doing Tasks");
 
 		if (currentTask == null) {
+
+			System.out.println("Current Task is null");
 
 			currentTask = Task.takeNextApplicableTaskFor(this);
 
 			currentTask.getNext().assignPerson(this);
-		}
 
-		if (pathfinder.getFinalDestFor(this) != null) {
+			pathfinder.requestPath(this, currentTask.getNext().getCenterX(),
+					currentTask.getNext().getCenterY());
 
-			if (!Util.isAdjacentTo(currentTask.getNext(),
-					pathfinder.getFinalDestFor(this))) {
-				pathfinder.removePathFor(this);
-				pathfinder.requestPath(this,
-						currentTask.getNext().getCenterX(), currentTask
-								.getNext().getCenterY());
-			}
-
-			if (!pathfinder.getPathFor(this).isEmpty()) {
+			System.out.println("Got new Task: " + currentTask);
+		} else {
+			
+			System.out.println("Current Task is not null");
+			
+			if (pathfinder.getPathFor(this) != null) {
+				
+				System.out.println("Path is not null");
+				
 				setLocation(pathfinder.getPathFor(this).remove(0));
-			}
-		}
-
-		if (Util.isAdjacentTo(this, currentTask.getNext())) {
-			currentTask.getNext().doWork(millisSinceLastUpdate);
-
-			if (currentTask.isDone()) {
-				currentTask = null;
+				
+				System.out.println("Moved up path");
+				
+				if (currentTask.getNext().isAtLocation(this)) {
+					
+					System.out.println("At job location, doing work");
+					
+					currentTask.getNext().doWork(millisSinceLastUpdate);
+					
+					if (currentTask.isDone()) {
+						currentTask = null;
+					}
+				}
+			} else {
+				System.out.println("Path is null");
 			}
 		}
 	}
