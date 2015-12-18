@@ -46,17 +46,43 @@ public class PathfindingThread extends Thread {
 				pathMesh = new int[map.numCols() * map.getTileSize()][map
 						.numRows() * map.getTileSize()];
 
-				ArrayList<int[]> pathFound = recursivelyGetPath(
-						(int) currentRequest[1], (int) currentRequest[2],
+				// ArrayList<int[]> pathFound = recursivelyGetPath(
+				// (int) currentRequest[1], (int) currentRequest[2],
+				// ((UnlockedFromGrid) currentRequest[0]).getApproxX(),
+				// ((UnlockedFromGrid) currentRequest[0]).getApproxY(),
+				// (int) Math.round(((UnlockedFromGrid) currentRequest[0])
+				// .getSpeed()), 1);
+
+				int cycle = 1;
+
+				pathMesh[(int) currentRequest[1]][(int) currentRequest[2]] = 1;
+
+				while (true) {
+					if (mapNextMeshLayer(
+							((UnlockedFromGrid) currentRequest[0]).getApproxX(),
+							((UnlockedFromGrid) currentRequest[0]).getApproxY(),
+							(int) Math
+									.round(((UnlockedFromGrid) currentRequest[0])
+											.getSpeed()), cycle)) {
+
+						System.out.println("MeshMapper retuned true");
+
+						break;
+					}
+
+					cycle++;
+				}
+
+				ArrayList<int[]> pathFound = getPathFromMesh(
 						((UnlockedFromGrid) currentRequest[0]).getApproxX(),
 						((UnlockedFromGrid) currentRequest[0]).getApproxY(),
 						(int) Math.round(((UnlockedFromGrid) currentRequest[0])
-								.getSpeed()), 1);
+								.getSpeed()));
 
 				pathsFound.put((UnlockedFromGrid) currentRequest[0], pathFound);
 
 				System.out.println("Path found, saved");
-				
+
 				System.out.println("Path length: " + pathFound.size());
 			}
 
@@ -87,12 +113,122 @@ public class PathfindingThread extends Thread {
 		}
 	}
 
+	private boolean mapNextMeshLayer(int objectX, int objectY, int distBetween,
+			int cycle) {
+
+		System.out.println("Mapping cycle: " + cycle);
+
+		for (int y = 0; y < pathMesh.length; y++) {
+			for (int x = 0; x < pathMesh[y].length; x++) {
+
+				if (pathMesh[y][x] == cycle) {
+
+					System.out.println("Found Node to Branch off of: X: " + x
+							+ " Y: " + y);
+
+					System.out.println("Target is X: " + objectX + " Y: "
+							+ objectY);
+
+					if (Util.getDistance(x, y, objectX, objectY) < distBetween) {
+						pathMesh[y][x] = cycle + 1;
+						System.out.println("Mapping has reached target");
+						return true;
+					}
+
+					if (pathMesh[y + distBetween][x] > cycle + 1
+							|| pathMesh[y + distBetween][x] == 0) {
+						pathMesh[y + distBetween][x] = cycle + 1;
+					}
+
+					if (pathMesh[y - distBetween][x] > cycle + 1
+							|| pathMesh[y - distBetween][x] == 0) {
+						pathMesh[y - distBetween][x] = cycle + 1;
+					}
+
+					if (pathMesh[y][x + distBetween] > cycle + 1
+							|| pathMesh[y][x + distBetween] == 0) {
+						pathMesh[y][x + distBetween] = cycle + 1;
+					}
+
+					if (pathMesh[y][x - distBetween] > cycle + 1
+							|| pathMesh[y][x - distBetween] == 0) {
+						pathMesh[y][x - distBetween] = cycle + 1;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private ArrayList<int[]> getPathFromMesh(int objectX, int objectY,
+			int distBetween) {
+		ArrayList<int[]> path = new ArrayList<int[]>();
+
+		System.out.println("Obtaining path from mesh");
+
+		int curX = objectX;
+		int curY = objectY;
+
+		while (pathMesh[curY][curX] != 1) {
+
+			int curNodeCycle = pathMesh[curY][curX];
+
+			System.out.println("At X: " + curX + " Y: " + curY + " Cycle: "
+					+ curNodeCycle);
+
+			path.add(new int[] { curX, curY });
+
+			System.out.println("Adjacent Node: "
+					+ pathMesh[curY + distBetween][curX]);
+
+			if (pathMesh[curY + distBetween][curX] == curNodeCycle - 1) {
+				curY = curY + distBetween;
+				continue;
+			}
+
+			System.out.println("Adjacent Node: "
+					+ pathMesh[curY - distBetween][curX]);
+
+			if (pathMesh[curY - distBetween][curX] == curNodeCycle - 1) {
+				curY = curY - distBetween;
+				continue;
+			}
+
+			System.out.println("Adjacent Node: "
+					+ pathMesh[curY][curX + distBetween]);
+
+			if (pathMesh[curY][curX + distBetween] == curNodeCycle - 1) {
+				curX = curX + distBetween;
+				continue;
+			}
+
+			System.out.println("Adjacent Node: "
+					+ pathMesh[curY][curX - distBetween]);
+
+			if (pathMesh[curY][curX - distBetween] == curNodeCycle - 1) {
+				curX = curX - distBetween;
+				continue;
+			}
+
+			System.out.println("Uh, oh! No path!");
+		}
+
+		System.out.println("Reached node with cycle 1");
+
+		path.add(new int[] { curX, curY });
+
+		return path;
+	}
+
 	private ArrayList<int[]> recursivelyGetPath(int curX, int curY,
 			int objectX, int objectY, int distBetween, int cycle) {
-		
+
 		System.out.println("Pathfinding, cycle: " + cycle);
-		
+
 		System.out.println("Testing point: " + curX + ", " + curY);
+
+		System.out
+				.println("Current Cycle At Location: " + pathMesh[curY][curX]);
 
 		if (pathMesh[curY][curX] < cycle && pathMesh[curY][curX] != 0) {
 			return null;
