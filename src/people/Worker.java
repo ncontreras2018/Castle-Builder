@@ -13,7 +13,7 @@ public class Worker extends Person {
 	public void draw(Graphics2D g2d, boolean isTransparent) {
 		g2d.setColor(Color.BLUE);
 		
-		g2d.fillOval(getApproxX(), getApproxY(), 20, 20);
+		g2d.fillOval(getApproxX(), getApproxY(), size, 20);
 	}
 
 	@Override

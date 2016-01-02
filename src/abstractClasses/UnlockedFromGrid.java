@@ -8,10 +8,13 @@ abstract public class UnlockedFromGrid extends Existent implements Drawable {
 	protected double xPos, yPos;
 
 	protected double movementSpeed;
+	
+	protected int size;
 
-	public UnlockedFromGrid(double xPos, double yPos, double speed) {
+	public UnlockedFromGrid(double xPos, double yPos, double speed, int size) {
 		setLocation(xPos, yPos);
 		movementSpeed = speed;
+		this.size = size;
 	}
 
 	public void setLocation(double x, double y) {
@@ -59,5 +62,20 @@ abstract public class UnlockedFromGrid extends Existent implements Drawable {
 	public int getApproxY() {
 		return (int) Math.round(yPos);
 	}
-
+	
+	public int getCenterX() {
+		return getApproxX() + (size / 2);
+	}
+	
+	public int getCenterY() {
+		return getApproxY() + (size / 2);
+	}
+	
+	public void setCenterLocation(int centerX, int centerY) {
+		setLocation(centerX - (size / 2), centerY - (size / 2));
+	}
+	
+	public void setCenterLocation(int[] point) {
+		setCenterLocation(point[0], point[1]);
+	}
 }

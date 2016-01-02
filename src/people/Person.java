@@ -11,7 +11,7 @@ import threads.PathfindingThread;
 import util.Util;
 import abstractClasses.UnlockedFromGrid;
 
-abstract public class Person extends UnlockedFromGrid implements Drawable {
+abstract public class Person extends UnlockedFromGrid {
 
 	protected int player;
 	private static PathfindingThread pathfinder;
@@ -19,7 +19,7 @@ abstract public class Person extends UnlockedFromGrid implements Drawable {
 	private Task currentTask;
 
 	public Person(double xPos, double yPos, double speed, int player) {
-		super(xPos, yPos, speed);
+		super(xPos, yPos, speed, 20);
 		this.player = player;
 	}
 
@@ -48,13 +48,12 @@ abstract public class Person extends UnlockedFromGrid implements Drawable {
 	 */
 
 	protected boolean shouldDoTasks() {
-		System.out.println("Has Task: " + Task.hasApplicableTaskFor(this)
-				+ " or " + (currentTask != null));
+		System.out.println("Has Task: " + Task.hasApplicableTaskFor(this) + " or " + (currentTask != null));
 		return Task.hasApplicableTaskFor(this) || currentTask != null;
 	}
 
 	protected void doTasks() {
-		
+
 		System.out.println("-----------------------------------");
 
 		System.out.println("Doing Tasks");
@@ -67,28 +66,30 @@ abstract public class Person extends UnlockedFromGrid implements Drawable {
 
 			currentTask.getNext().assignPerson(this);
 
-			pathfinder.requestPath(this, currentTask.getNext().getCenterX(),
-					currentTask.getNext().getCenterY());
+			pathfinder.requestPath(this, currentTask.getNext().getCenterX(), currentTask.getNext().getCenterY());
 
 			System.out.println("Got new Task: " + currentTask);
 		} else {
-			
+
 			System.out.println("Current Task is not null");
-			
+
 			if (pathfinder.getPathFor(this) != null) {
-				
+
 				System.out.println("Path is not null");
-				
-				setLocation(pathfinder.getPathFor(this).remove(0));
-				
-				System.out.println("Moved up path");
-				
+
+				if (!pathfinder.getPathFor(this).isEmpty()) {
+
+					setCenterLocation(pathfinder.getPathFor(this).remove(0));
+
+					System.out.println("Moved up path to: " + getX() + " " + getY());
+				}
+
 				if (currentTask.getNext().isAtLocation(this)) {
-					
+
 					System.out.println("At job location, doing work");
-					
+
 					currentTask.getNext().doWork(millisSinceLastUpdate);
-					
+
 					if (currentTask.isDone()) {
 						currentTask = null;
 					}

@@ -15,7 +15,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		int mapRows = 81, mapCols = 101;
+		int mapRows = 3, mapCols = 3;
 		
 		int windowWidth = 1000, windowHeight = 600;
 		
@@ -65,7 +65,7 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		map.getUnlockedObjects().add(new Worker(600,600, 1, 1));
+		map.getUnlockedObjects().add(new Worker(30, 20, 1, 1));
 		
 	}
 
