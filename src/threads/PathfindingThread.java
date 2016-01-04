@@ -54,6 +54,9 @@ public class PathfindingThread extends Thread {
 
 				pathMesh[(int) currentRequest[1]][(int) currentRequest[2]] = 1;
 
+				System.out.println(
+						"Pathfinder mesh start at X: " + (int) currentRequest[1] + " Y: " + (int) currentRequest[2]);
+
 				while (true) {
 
 					System.out.println("cycle: " + cycle);
@@ -62,8 +65,8 @@ public class PathfindingThread extends Thread {
 
 					// System.out.println(pathMeshToString(pathMesh));
 
-					if (mapNextMeshLayer(((UnlockedFromGrid) currentRequest[0]).getCenterX(),
-							((UnlockedFromGrid) currentRequest[0]).getCenterY(),
+					if (mapNextMeshLayer(((UnlockedFromGrid) currentRequest[0]).getApproxX(),
+							((UnlockedFromGrid) currentRequest[0]).getApproxY(),
 							(int) Math.round(((UnlockedFromGrid) currentRequest[0]).getSpeed()), cycle)) {
 
 						System.out.println("MeshMapper retuned true");
@@ -78,8 +81,8 @@ public class PathfindingThread extends Thread {
 
 				System.out.println(pathMeshToString(pathMesh));
 
-				ArrayList<int[]> pathFound = getPathFromMesh(((UnlockedFromGrid) currentRequest[0]).getCenterX(),
-						((UnlockedFromGrid) currentRequest[0]).getCenterY(),
+				ArrayList<int[]> pathFound = getPathFromMesh(((UnlockedFromGrid) currentRequest[0]).getApproxX(),
+						((UnlockedFromGrid) currentRequest[0]).getApproxY(),
 						(int) Math.round(((UnlockedFromGrid) currentRequest[0]).getSpeed()));
 
 				pathsFound.put((UnlockedFromGrid) currentRequest[0], pathFound);
@@ -120,7 +123,32 @@ public class PathfindingThread extends Thread {
 	}
 
 	public ArrayList<int[]> getPathFor(UnlockedFromGrid needsPath) {
+
+		System.out.println("Getting Path: " + printPath(pathsFound.get(needsPath)));
+
 		return pathsFound.get(needsPath);
+	}
+
+	private String printPath(ArrayList<int[]> path) {
+
+		if (path == null) {
+			return "null";
+		}
+
+		String toReturn = "[";
+
+		for (int i = 0; i < path.size(); i++) {
+			int[] curNode = path.get(i);
+
+			toReturn += "[" + curNode[0] + ", " + curNode[1] + "], ";
+		}
+
+		toReturn = toReturn.substring(0, toReturn.length() - 3);
+
+		toReturn += "]";
+
+		return toReturn;
+
 	}
 
 	public void removePathFor(UnlockedFromGrid removeFrom) {

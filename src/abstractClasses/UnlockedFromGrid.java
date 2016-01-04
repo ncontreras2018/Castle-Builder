@@ -1,34 +1,53 @@
 package abstractClasses;
 
+import java.awt.Point;
+
 import interfaces.Drawable;
 import util.Util;
 
 abstract public class UnlockedFromGrid extends Existent implements Drawable {
 
-	protected double xPos, yPos;
+	private double xPos, yPos;
 
-	protected double movementSpeed;
-	
+	private double movementSpeed;
+
 	protected int size;
 
-	public UnlockedFromGrid(double xPos, double yPos, double speed, int size) {
+	public UnlockedFromGrid(int xPos, int yPos, double speed, int size) {
 		setLocation(xPos, yPos);
 		movementSpeed = speed;
 		this.size = size;
 	}
 
-	public void setLocation(double x, double y) {
-
+	private boolean somethingInWayOfMe(double x, double y) {
+		
+		System.out.println("Checking for object at X: " + x + " Y: " + y);
+		
 		for (LockedToGrid layer : Util.getGridObjectsAt(x, y)) {
+
+			System.out.println("Checking layer with: " + layer);
 
 			if (layer != null) {
 
 				if (!layer.canPassThrough(this)) {
-					if (layer.contains(x, y)) {
-						return;
-					}
+
+					System.out.println("^Cannot pass through above layer^");
+
+					return true;
 				}
 			}
+		}
+
+		return false;
+
+	}
+
+	public void setLocation(double x, double y) {
+
+		System.out.println("Setting Location With Check To X: " + x + " Y: " + y);
+
+		if (somethingInWayOfMe(x, y)) {
+			return;
 		}
 
 		xPos = x;
@@ -63,19 +82,16 @@ abstract public class UnlockedFromGrid extends Existent implements Drawable {
 		return (int) Math.round(yPos);
 	}
 	
-	public int getCenterX() {
-		return getApproxX() + (size / 2);
+	public int getTopLeftX() {
+		return getApproxX() - (size / 2);
 	}
 	
-	public int getCenterY() {
-		return getApproxY() + (size / 2);
+	public int getTopLeftY() {
+		return getApproxY() - (size / 2);
 	}
 	
-	public void setCenterLocation(int centerX, int centerY) {
-		setLocation(centerX - (size / 2), centerY - (size / 2));
+	public Point getTopLeft() {
+		return new Point(getTopLeftX(), getTopLeftY());
 	}
 	
-	public void setCenterLocation(int[] point) {
-		setCenterLocation(point[0], point[1]);
-	}
 }

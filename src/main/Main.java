@@ -19,7 +19,7 @@ public class Main {
 		
 		int windowWidth = 1000, windowHeight = 600;
 		
-		int tileSize = 25;
+		int tileSize = 30;
 		
 		Map map = new Map(mapRows, mapCols, tileSize);
 		
@@ -65,7 +65,7 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		map.getUnlockedObjects().add(new Worker(30, 20, 1, 1));
+		map.getUnlockedObjects().add(new Worker(15, 15, 1, 1));
 		
 	}
 

@@ -38,7 +38,7 @@ public class Util {
 			return false;
 		}
 		
-		return isAdjacentTo(locked.getCenterX(), locked.getCenterY(),
+		return isAdjacentTo(locked.getX(), locked.getY(),
 				location[0], location[1]);
 	}
 
@@ -50,7 +50,7 @@ public class Util {
 	public static boolean isAdjacentTo(UnlockedFromGrid unlocked,
 			LockedToGrid locked) {
 		return isAdjacentTo(unlocked.getX(), unlocked.getY(),
-				locked.getCenterX(), locked.getCenterY());
+				locked.getX(), locked.getY());
 	}
 
 	public static LockedToGrid[] getGridObjectsAt(double x, double y) {

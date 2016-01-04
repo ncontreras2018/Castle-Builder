@@ -15,9 +15,7 @@ abstract public class LockedToGrid extends Existent {
 		this.col = col;
 	}
 
-	public boolean canPassThrough(UnlockedFromGrid other) {
-		return false;
-	}
+	public abstract boolean canPassThrough(UnlockedFromGrid other);
 
 	public boolean contains(double x, double y) {
 		if (x > col * MAP.getTileSize()
@@ -39,18 +37,18 @@ abstract public class LockedToGrid extends Existent {
 	}
 	
 	public double getX() {
-		return col * MAP.getTileSize();
+		return (col * MAP.getTileSize()) + (MAP.getTileSize() / 2);
 	}
 	
 	public double getY() {
+		return (row * MAP.getTileSize()) + (MAP.getTileSize() / 2);
+	}
+	
+	public int getTopLeftX() {
+		return col * MAP.getTileSize();
+	}
+	
+	public int getTopLeftY() {
 		return row * MAP.getTileSize();
-	}
-	
-	public double getCenterX() {
-		return getX() + (MAP.getTileSize() / 2);
-	}
-	
-	public double getCenterY() {
-		return getY() + (MAP.getTileSize() / 2);
 	}
 }

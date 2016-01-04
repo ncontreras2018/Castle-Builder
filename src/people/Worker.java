@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 
 public class Worker extends Person {
 
-	public Worker(double xPos, double yPos, double speed, int player) {
+	public Worker(int xPos, int yPos, double speed, int player) {
 		super(xPos, yPos, speed, player);
 	}
 
@@ -13,7 +13,7 @@ public class Worker extends Person {
 	public void draw(Graphics2D g2d, boolean isTransparent) {
 		g2d.setColor(Color.BLUE);
 		
-		g2d.fillOval(getApproxX(), getApproxY(), size, 20);
+		g2d.fillOval(getTopLeftX(), getTopLeftY(), size, size);
 	}
 
 	@Override

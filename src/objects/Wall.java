@@ -6,8 +6,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import abstractClasses.LockedToGrid;
+import abstractClasses.UnlockedFromGrid;
 
-public class Wall extends VisibleObject implements Drawable  {
+public class Wall extends VisibleObject implements Drawable {
 
 	public Wall(int row, int col) {
 		super(row, col);
@@ -18,11 +19,15 @@ public class Wall extends VisibleObject implements Drawable  {
 
 		g2d.setColor(Color.GRAY);
 
-		g2d.fillRect((int) getX(), (int) getY(), MAP.getTileSize(),
-				MAP.getTileSize());
+		g2d.fillRect(getTopLeftX(), getTopLeftY(), MAP.getTileSize(), MAP.getTileSize());
 	}
 
 	@Override
 	public void update() {
+	}
+
+	@Override
+	public boolean canPassThrough(UnlockedFromGrid other) {
+		return false;
 	}
 }

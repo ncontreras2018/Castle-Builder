@@ -18,9 +18,11 @@ abstract public class Person extends UnlockedFromGrid {
 
 	private Task currentTask;
 
-	public Person(double xPos, double yPos, double speed, int player) {
+	public Person(int xPos, int yPos, double speed, int player) {
 		super(xPos, yPos, speed, 20);
 		this.player = player;
+		
+		System.out.println("New person at X: " + getX() + " Y: " + getY());
 	}
 
 	public static void setPathfinder(PathfindingThread pf) {
@@ -66,7 +68,7 @@ abstract public class Person extends UnlockedFromGrid {
 
 			currentTask.getNext().assignPerson(this);
 
-			pathfinder.requestPath(this, currentTask.getNext().getCenterX(), currentTask.getNext().getCenterY());
+			pathfinder.requestPath(this, currentTask.getNext().getX(), currentTask.getNext().getY());
 
 			System.out.println("Got new Task: " + currentTask);
 		} else {
@@ -79,7 +81,7 @@ abstract public class Person extends UnlockedFromGrid {
 
 				if (!pathfinder.getPathFor(this).isEmpty()) {
 
-					setCenterLocation(pathfinder.getPathFor(this).remove(0));
+					setLocation(pathfinder.getPathFor(this).remove(0));
 
 					System.out.println("Moved up path to: " + getX() + " " + getY());
 				}

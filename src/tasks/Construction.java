@@ -5,6 +5,7 @@ import interfaces.Drawable;
 import java.awt.Graphics2D;
 import java.io.ObjectInputStream.GetField;
 
+import abstractClasses.UnlockedFromGrid;
 import objects.VisibleObject;
 import people.Person;
 
@@ -56,5 +57,10 @@ public class Construction extends Task implements Drawable {
 			MAP.getGrid()[row][col][1] = toBuild;
 			MAP.getGrid()[row][col][2] = null;
 		}
+	}
+
+	@Override
+	public boolean canPassThrough(UnlockedFromGrid other) {
+		return true;
 	}
 }
