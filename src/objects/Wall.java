@@ -17,9 +17,13 @@ public class Wall extends VisibleObject implements Drawable {
 	@Override
 	public void draw(Graphics2D g2d, boolean isTransparent) {
 
-		g2d.setColor(Color.GRAY);
+		if (isTransparent) {
+			g2d.setColor(Color.LIGHT_GRAY);
+		} else {
+			g2d.setColor(Color.DARK_GRAY);
+		}
 
-		g2d.fillRect(getTopLeftX(), getTopLeftY(), MAP.getTileSize(), MAP.getTileSize());
+		g2d.fillRect(getTopLeftX(), getTopLeftY(), getMap().getTileSize(), getMap().getTileSize());
 	}
 
 	@Override

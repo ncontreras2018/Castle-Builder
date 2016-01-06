@@ -2,7 +2,7 @@ package abstractClasses;
 
 abstract public class LockedToGrid extends Existent {
 
-	protected int row, col;
+	private int row, col;
 
 	public LockedToGrid(int row, int col) {
 
@@ -18,10 +18,8 @@ abstract public class LockedToGrid extends Existent {
 	public abstract boolean canPassThrough(UnlockedFromGrid other);
 
 	public boolean contains(double x, double y) {
-		if (x > col * MAP.getTileSize()
-				&& x < (col * MAP.getTileSize()) + MAP.getTileSize()) {
-			if (y > row * MAP.getTileSize()
-					&& y < (row * MAP.getTileSize()) + MAP.getTileSize()) {
+		if (x > col * getMap().getTileSize() && x < (col * getMap().getTileSize()) + getMap().getTileSize()) {
+			if (y > row * getMap().getTileSize() && y < (row * getMap().getTileSize()) + getMap().getTileSize()) {
 				return true;
 			}
 		}
@@ -35,20 +33,28 @@ abstract public class LockedToGrid extends Existent {
 	public int getCol() {
 		return col;
 	}
-	
+
 	public double getX() {
-		return (col * MAP.getTileSize()) + (MAP.getTileSize() / 2);
+		return (col * getMap().getTileSize()) + (getMap().getTileSize() / 2);
 	}
-	
+
 	public double getY() {
-		return (row * MAP.getTileSize()) + (MAP.getTileSize() / 2);
+		return (row * getMap().getTileSize()) + (getMap().getTileSize() / 2);
 	}
-	
+
+	public int getApproxX() {
+		return (int) Math.round(getX());
+	}
+
+	public int getApproxY() {
+		return (int) Math.round(getY());
+	}
+
 	public int getTopLeftX() {
-		return col * MAP.getTileSize();
+		return col * getMap().getTileSize();
 	}
-	
+
 	public int getTopLeftY() {
-		return row * MAP.getTileSize();
+		return row * getMap().getTileSize();
 	}
 }

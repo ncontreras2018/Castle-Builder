@@ -11,8 +11,6 @@ import main.Map;
 public class PathfindingThread extends Thread {
 	private Map map;
 
-	private int[][] pathMesh;
-
 	private ArrayList<Object[]> pathFindingRequests;
 
 	private HashMap<UnlockedFromGrid, ArrayList<int[]>> pathsFound;
@@ -23,11 +21,19 @@ public class PathfindingThread extends Thread {
 		pathsFound = new HashMap<UnlockedFromGrid, ArrayList<int[]>>();
 	}
 
-	public void requestPath(UnlockedFromGrid objectNeedingPath, double targX, double targY) {
+	public void requestPath(UnlockedFromGrid objectNeedingPath, int targRow, int targCol) {
 
 		removePathFor(objectNeedingPath);
 
-		pathFindingRequests.add(new Object[] { objectNeedingPath, (int) Math.round(targX), (int) Math.round(targY) });
+		pathFindingRequests.add(new Object[] { objectNeedingPath, targRow, targCol });
+	}
+
+	public void removePathFor(UnlockedFromGrid objectNeedingPath) {
+		pathsFound.remove(objectNeedingPath);
+	}
+
+	public ArrayList<int[]> getPathFor(UnlockedFromGrid objectNeedingPath) {
+		return pathsFound.get(objectNeedingPath);
 	}
 
 	@Override
@@ -41,55 +47,27 @@ public class PathfindingThread extends Thread {
 
 				System.out.println("Pathfinder has request");
 
-				pathMesh = new int[map.numCols() * map.getTileSize()][map.numRows() * map.getTileSize()];
+				int objectRow = ((UnlockedFromGrid) currentRequest[0]).getRow();
+				int objectCol = ((UnlockedFromGrid) currentRequest[0]).getCol();
 
-				// ArrayList<int[]> pathFound = recursivelyGetPath(
-				// (int) currentRequest[1], (int) currentRequest[2],
-				// ((UnlockedFromGrid) currentRequest[0]).getApproxX(),
-				// ((UnlockedFromGrid) currentRequest[0]).getApproxY(),
-				// (int) Math.round(((UnlockedFromGrid) currentRequest[0])
-				// .getSpeed()), 1);
+				int targetRow = (int) currentRequest[1];
+				int targetCol = (int) currentRequest[2];
 
-				int cycle = 1;
+				int[][] mapMesh = mapMesh(targetRow, targetCol, objectRow, objectCol,
+						(UnlockedFromGrid) currentRequest[0]);
 
-				pathMesh[(int) currentRequest[1]][(int) currentRequest[2]] = 1;
+				if (mapMesh != null) {
 
-				System.out.println(
-						"Pathfinder mesh start at X: " + (int) currentRequest[1] + " Y: " + (int) currentRequest[2]);
+					ArrayList<int[]> pathFound = getPathFromMesh(objectRow, objectCol, mapMesh);
 
-				while (true) {
+					pathsFound.put((UnlockedFromGrid) currentRequest[0], pathFound);
 
-					System.out.println("cycle: " + cycle);
+					System.out.println("Path found, saved");
 
-					// System.out.println("Dumping Path Mesh");
-
-					// System.out.println(pathMeshToString(pathMesh));
-
-					if (mapNextMeshLayer(((UnlockedFromGrid) currentRequest[0]).getApproxX(),
-							((UnlockedFromGrid) currentRequest[0]).getApproxY(),
-							(int) Math.round(((UnlockedFromGrid) currentRequest[0]).getSpeed()), cycle)) {
-
-						System.out.println("MeshMapper retuned true");
-
-						break;
-					}
-
-					cycle++;
+					System.out.println("Path length: " + pathFound.size());
+				} else {
+					System.out.println("Path Mesh is null, request dumped");
 				}
-
-				System.out.println("Dumping");
-
-				System.out.println(pathMeshToString(pathMesh));
-
-				ArrayList<int[]> pathFound = getPathFromMesh(((UnlockedFromGrid) currentRequest[0]).getApproxX(),
-						((UnlockedFromGrid) currentRequest[0]).getApproxY(),
-						(int) Math.round(((UnlockedFromGrid) currentRequest[0]).getSpeed()));
-
-				pathsFound.put((UnlockedFromGrid) currentRequest[0], pathFound);
-
-				System.out.println("Path found, saved");
-
-				System.out.println("Path length: " + pathFound.size());
 			}
 
 			try {
@@ -100,245 +78,153 @@ public class PathfindingThread extends Thread {
 		}
 	}
 
-	public String pathMeshToString(int[][] pathMesh) {
-		String stringForm = " ";
+	private ArrayList<int[]> getPathFromMesh(int startRow, int startCol, int[][] pathMesh) {
 
-		for (int row = 0; row < pathMesh.length; row++) {
+		ArrayList<int[]> pathFound = new ArrayList<int[]>();
 
-			for (int col = 0; col < pathMesh[row].length; col++) {
+		int curRow = startRow;
+		int curCol = startCol;
 
-				String curNum = pathMesh[row][col] + "";
+		while (true) {
 
-				int startingLength = curNum.length();
+			pathFound.add(new int[] { curRow, curCol });
 
-				for (int i = 0; i < 3 - startingLength; i++) {
-					curNum = "0" + curNum;
-				}
+			int curCycle = pathMesh[curRow][curCol];
 
-				stringForm += ", " + curNum;
+			System.out.println("Currently at cycle: " + curCycle);
+
+			System.out.println("Cur Row: " + curRow + " Cur Col " + curCol);
+
+			if (curCycle == 1) {
+				return pathFound;
 			}
-			stringForm += "\n ";
-		}
-		return stringForm;
-	}
 
-	public ArrayList<int[]> getPathFor(UnlockedFromGrid needsPath) {
-
-		System.out.println("Getting Path: " + printPath(pathsFound.get(needsPath)));
-
-		return pathsFound.get(needsPath);
-	}
-
-	private String printPath(ArrayList<int[]> path) {
-
-		if (path == null) {
-			return "null";
-		}
-
-		String toReturn = "[";
-
-		for (int i = 0; i < path.size(); i++) {
-			int[] curNode = path.get(i);
-
-			toReturn += "[" + curNode[0] + ", " + curNode[1] + "], ";
-		}
-
-		toReturn = toReturn.substring(0, toReturn.length() - 3);
-
-		toReturn += "]";
-
-		return toReturn;
-
-	}
-
-	public void removePathFor(UnlockedFromGrid removeFrom) {
-		pathsFound.remove(removeFrom);
-	}
-
-	public int[] getFinalDestFor(UnlockedFromGrid pathfindingObject) {
-
-		if (pathsFound.get(pathfindingObject) == null || pathsFound.get(pathfindingObject).isEmpty()) {
-			return null;
-		} else {
-			return pathsFound.get(pathfindingObject).get(pathsFound.get(pathfindingObject).size() - 1);
-		}
-	}
-
-	private boolean mapNextMeshLayer(int objectX, int objectY, int distBetween, int cycle) {
-
-		System.out.println("Mapping cycle: " + cycle);
-
-		for (int y = 0; y < pathMesh.length; y++) {
-			for (int x = 0; x < pathMesh[y].length; x++) {
-
-				if (pathMesh[y][x] == cycle) {
-
-					System.out.println("Found Node to Branch off of: X: " + x + " Y: " + y);
-
-					System.out.println("Target is X: " + objectX + " Y: " + objectY);
-
-					if (Util.getDistance(x, y, objectX, objectY) < distBetween) {
-						pathMesh[y][x] = cycle;
-						System.out.println("Mapping has reached target");
-						return true;
-					}
-
-					if (y + distBetween >= 0 && y + distBetween < pathMesh.length) {
-
-						if (pathMesh[y + distBetween][x] > cycle + 1 || pathMesh[y + distBetween][x] == 0) {
-							pathMesh[y + distBetween][x] = cycle + 1;
-						}
-					}
-
-					if (y - distBetween >= 0 && y - distBetween < pathMesh.length) {
-
-						if (pathMesh[y - distBetween][x] > cycle + 1 || pathMesh[y - distBetween][x] == 0) {
-							pathMesh[y - distBetween][x] = cycle + 1;
-						}
-					}
-
-					if (x + distBetween >= 0 && x + distBetween < pathMesh[y].length) {
-
-						if (pathMesh[y][x + distBetween] > cycle + 1 || pathMesh[y][x + distBetween] == 0) {
-							pathMesh[y][x + distBetween] = cycle + 1;
-						}
-					}
-
-					if (x - distBetween >= 0 && x - distBetween < pathMesh[y].length) {
-
-						if (pathMesh[y][x - distBetween] > cycle + 1 || pathMesh[y][x - distBetween] == 0) {
-							pathMesh[y][x - distBetween] = cycle + 1;
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	private ArrayList<int[]> getPathFromMesh(int objectX, int objectY, int distBetween) {
-		ArrayList<int[]> path = new ArrayList<int[]>();
-
-		System.out.println("Obtaining path from mesh");
-
-		int curX = objectX;
-		int curY = objectY;
-
-		while (pathMesh[curY][curX] != 1) {
-
-			int curNodeCycle = pathMesh[curY][curX];
-
-			System.out.println("At X: " + curX + " Y: " + curY + " Cycle: " + curNodeCycle);
-
-			path.add(new int[] { curX, curY });
-
-			if (curY + distBetween >= 0 && curY + distBetween < pathMesh.length) {
-
-				System.out.println("Adjacent Node: " + pathMesh[curY + distBetween][curX]);
-
-				if (pathMesh[curY + distBetween][curX] == curNodeCycle - 1) {
-					curY = curY + distBetween;
+			if (curRow + 1 < pathMesh.length) {
+				if (pathMesh[curRow + 1][curCol] == curCycle - 1) {
+					curRow = curRow + 1;
+					System.out.println("Added Row: " + curRow + " Col " + curCol);
 					continue;
 				}
 			}
 
-			if (curY - distBetween >= 0 && curY - distBetween < pathMesh.length) {
-
-				System.out.println("Adjacent Node: " + pathMesh[curY - distBetween][curX]);
-
-				if (pathMesh[curY - distBetween][curX] == curNodeCycle - 1) {
-					curY = curY - distBetween;
+			if (curRow - 1 >= 0) {
+				if (pathMesh[curRow - 1][curCol] == curCycle - 1) {
+					curRow = curRow - 1;
+					System.out.println("Added Row: " + curRow + " Col " + curCol);
 					continue;
 				}
-
 			}
 
-			if (curX + distBetween >= 0 && curX + distBetween < pathMesh[curY].length) {
-
-				System.out.println("Adjacent Node: " + pathMesh[curY][curX + distBetween]);
-
-				if (pathMesh[curY][curX + distBetween] == curNodeCycle - 1) {
-					curX = curX + distBetween;
+			if (curCol + 1 < pathMesh[curRow].length) {
+				if (pathMesh[curRow][curCol + 1] == curCycle - 1) {
+					curCol = curCol + 1;
+					System.out.println("Added Row: " + curRow + " Col " + curCol);
 					continue;
 				}
-
 			}
 
-			if (curX - distBetween >= 0 && curX - distBetween < pathMesh[curY].length) {
-
-				System.out.println("Adjacent Node: " + pathMesh[curY][curX - distBetween]);
-
-				if (pathMesh[curY][curX - distBetween] == curNodeCycle - 1) {
-					curX = curX - distBetween;
+			if (curCol - 1 >= 0) {
+				if (pathMesh[curRow][curCol - 1] == curCycle - 1) {
+					curCol = curCol - 1;
+					System.out.println("Added Row: " + curRow + " Col " + curCol);
 					continue;
 				}
-
 			}
 
-			System.out.println("Uh, oh! No path!");
+			System.out.println("***Oh, no! No Path!***");
+
 		}
-
-		System.out.println("Reached node with cycle 1");
-
-		path.add(new int[] { curX, curY });
-
-		return path;
 	}
 
-	private ArrayList<int[]> recursivelyGetPath(int curX, int curY, int objectX, int objectY, int distBetween,
-			int cycle) {
+	private int[][] mapMesh(int targRow, int targCol, int objectRow, int objectCol, UnlockedFromGrid obj) {
 
-		System.out.println("Pathfinding, cycle: " + cycle);
+		int[][] pathMesh = new int[map.numRows()][map.numCols()];
 
-		System.out.println("Testing point: " + curX + ", " + curY);
+		pathMesh[targRow][targCol] = 1;
 
-		System.out.println("Current Cycle At Location: " + pathMesh[curY][curX]);
+		ArrayList<int[]> lastNodes = new ArrayList<int[]>();
 
-		if (pathMesh[curY][curX] < cycle && pathMesh[curY][curX] != 0) {
-			return null;
-		}
+		lastNodes.add(new int[] { targRow, targCol });
 
-		pathMesh[curY][curX] = cycle;
+		int cycle = 2;
 
-		if (Util.getDistance(curX, curY, objectX, objectY) < distBetween) {
+		while (true) {
 
-			ArrayList<int[]> path = new ArrayList<int[]>();
+			ArrayList<int[]> newNodes = new ArrayList<int[]>();
 
-			path.add(0, new int[] { curX, curY });
+			System.out.println("Building off " + lastNodes.size() + " nodes");
 
-			return path;
+			for (int[] nodeLoc : lastNodes) {
 
-		} else {
-			ArrayList<ArrayList<int[]>> possiblePaths = new ArrayList<ArrayList<int[]>>();
-
-			possiblePaths.add(recursivelyGetPath(curX + distBetween, curY, objectX, objectY, distBetween, cycle + 1));
-
-			possiblePaths.add(recursivelyGetPath(curX - distBetween, curY, objectX, objectY, distBetween, cycle + 1));
-
-			possiblePaths.add(recursivelyGetPath(curX, curY + distBetween, objectX, objectY, distBetween, cycle + 1));
-
-			possiblePaths.add(recursivelyGetPath(curX, curY - distBetween, objectX, objectY, distBetween, cycle + 1));
-
-			ArrayList<int[]> bestPath = null;
-			int bestPathLength = Integer.MAX_VALUE;
-
-			for (int i = 0; i < 4; i++) {
-				if (possiblePaths.get(i) != null) {
-					if (possiblePaths.get(i).size() < bestPathLength) {
-						bestPath = possiblePaths.get(i);
-						bestPathLength = bestPath.size();
-					}
+				if (nodeLoc[0] == objectRow && nodeLoc[1] == objectCol) {
+					return pathMesh;
 				}
+
+				newNodes.addAll(mapNearbyTiles(nodeLoc[0], nodeLoc[1], cycle, pathMesh, obj));
 			}
 
-			if (bestPath == null) {
+			lastNodes.clear();
+
+			lastNodes.addAll(newNodes);
+
+			System.out.println("Cycle " + cycle + " finished");
+
+			System.out.println("Created " + lastNodes.size() + " nodes");
+
+			if (lastNodes.isEmpty()) {
 				return null;
-			} else {
+			}
 
-				bestPath.add(0, new int[] { curX, curY });
+			cycle++;
 
-				return bestPath;
+		}
+	}
+
+	private ArrayList<int[]> mapNearbyTiles(int row, int col, int cycle, int[][] pathMesh, UnlockedFromGrid obj) {
+
+		System.out.println("Mapping Nearby Tiles for Row: " + row + " Col " + col);
+
+		System.out.println("Mapping cycle: " + (cycle + 1));
+
+		ArrayList<int[]> newTileLocs = new ArrayList<int[]>();
+
+		if (row + 1 < pathMesh.length) {
+			if (pathMesh[row + 1][col] > cycle + 1 || pathMesh[row + 1][col] == 0) {
+				if (map.canPassThrough(obj, row + 1, col)) {
+					pathMesh[row + 1][col] = cycle;
+					newTileLocs.add(new int[] { row + 1, col });
+				}
 			}
 		}
+
+		if (row - 1 >= 0) {
+			if (pathMesh[row - 1][col] > cycle + 1 || pathMesh[row - 1][col] == 0) {
+				if (map.canPassThrough(obj, row - 1, col)) {
+					pathMesh[row - 1][col] = cycle;
+					newTileLocs.add(new int[] { row - 1, col });
+				}
+			}
+		}
+
+		if (col + 1 < pathMesh[row].length) {
+			if (pathMesh[row][col + 1] > cycle + 1 || pathMesh[row][col + 1] == 0) {
+				if (map.canPassThrough(obj, row, col + 1)) {
+					pathMesh[row][col + 1] = cycle;
+					newTileLocs.add(new int[] { row, col + 1 });
+				}
+			}
+		}
+
+		if (col - 1 >= 0) {
+			if (pathMesh[row][col - 1] > cycle + 1 || pathMesh[row][col - 1] == 0) {
+				if (map.canPassThrough(obj, row, col - 1)) {
+					pathMesh[row][col - 1] = cycle;
+					newTileLocs.add(new int[] { row, col - 1 });
+				}
+			}
+		}
+
+		return newTileLocs;
+
 	}
 }

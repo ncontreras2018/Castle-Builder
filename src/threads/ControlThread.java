@@ -15,7 +15,7 @@ public class ControlThread extends Thread {
 	private KeyListener keyListener;
 	private MouseListener mouseListener;
 
-	private final int CAMERA_SPEED = 5;
+	private final int CAMERA_SPEED = 15;
 	private final double ZOOM_SPEED = .01;
 
 	private final int NANOS_PER_MILLI = 1000000;

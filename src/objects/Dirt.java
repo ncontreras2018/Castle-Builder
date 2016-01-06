@@ -29,11 +29,12 @@ public class Dirt extends LockedToGrid implements Drawable {
 			g2d.setColor(Color.GREEN);
 		}
 
-		g2d.fillRect(col * MAP.getTileSize(), row * MAP.getTileSize(), MAP.getTileSize(), MAP.getTileSize());
+		g2d.fillRect(getCol() * getMap().getTileSize(), getRow() * getMap().getTileSize(), getMap().getTileSize(),
+				getMap().getTileSize());
 
 		g2d.setColor(Color.BLACK);
 
-		g2d.drawRect(getTopLeftX(), getTopLeftY(), MAP.getTileSize(), MAP.getTileSize());
+		g2d.drawRect(getTopLeftX(), getTopLeftY(), getMap().getTileSize(), getMap().getTileSize());
 	}
 
 	@Override

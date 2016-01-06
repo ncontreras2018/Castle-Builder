@@ -15,7 +15,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		int mapRows = 3, mapCols = 3;
+		int mapRows = 81, mapCols = 121;
 		
 		int windowWidth = 1000, windowHeight = 600;
 		
@@ -66,6 +66,12 @@ public class Main {
 		}
 		
 		map.getUnlockedObjects().add(new Worker(15, 15, 1, 1));
+		
+		map.getUnlockedObjects().add(new Worker(45, 15, 1, 1));
+		
+		map.getUnlockedObjects().add(new Worker(150, 176, 1, 1));
+		
+		map.getUnlockedObjects().add(new Worker(67, 145, 1, 1));
 		
 	}
 

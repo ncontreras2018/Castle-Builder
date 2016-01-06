@@ -12,22 +12,22 @@ import abstractClasses.UnlockedFromGrid;
 public class Map {
 
 	private int tileSize;
-	
+
 	private LockedToGrid[][][] grid;
-	
+
 	private ArrayList<UnlockedFromGrid> unlockedObjects;
 
 	public Map(int rows, int cols, int tileSize) {
 
 		this.tileSize = tileSize;
-		
+
 		grid = new LockedToGrid[rows][cols][3];
-		
+
 		unlockedObjects = new ArrayList<UnlockedFromGrid>();
-		
+
 		fillWithDirt();
 	}
-	
+
 	public void addUnlockedObject(UnlockedFromGrid object) {
 		unlockedObjects.add(object);
 	}
@@ -35,11 +35,11 @@ public class Map {
 	public int numRows() {
 		return grid.length;
 	}
-	
+
 	public int numCols() {
 		return grid[0].length;
 	}
-	
+
 	private void fillWithDirt() {
 		for (int row = 0; row < grid.length; row++) {
 			for (int col = 0; col < grid[row].length; col++) {
@@ -51,11 +51,11 @@ public class Map {
 	public int getTileSize() {
 		return tileSize;
 	}
-	
+
 	public LockedToGrid[][][] getGrid() {
 		return grid;
 	}
-	
+
 	public ArrayList<UnlockedFromGrid> getUnlockedObjects() {
 		return unlockedObjects;
 	}
@@ -64,9 +64,9 @@ public class Map {
 		for (int row = 0; row < grid.length; row++) {
 			for (int col = 0; col < grid[row].length; col++) {
 				for (int layer = 0; layer < grid[row][col].length; layer++) {
-					
+
 					LockedToGrid obj = grid[row][col][layer];
-					
+
 					if (obj != null) {
 						if (obj instanceof Construction) {
 							if (((Construction) obj).getPriorty() == 0) {
@@ -78,14 +78,14 @@ public class Map {
 			}
 		}
 	}
-	
+
 	public void validateTemporaryItems() {
 		for (int row = 0; row < grid.length; row++) {
 			for (int col = 0; col < grid[row].length; col++) {
 				for (int layer = 0; layer < grid[row][col].length; layer++) {
-					
+
 					LockedToGrid obj = grid[row][col][layer];
-					
+
 					if (obj != null) {
 						if (obj instanceof Construction) {
 							if (((Construction) obj).getPriorty() == 0) {
@@ -96,5 +96,25 @@ public class Map {
 				}
 			}
 		}
+	}
+	
+	public ArrayList<UnlockedFromGrid> getObjectsAt(int row, int col) {
+		ArrayList<UnlockedFromGrid> objects = new ArrayList<UnlockedFromGrid>();
+		
+		for (UnlockedFromGrid cur : unlockedObjects) {
+			if (cur.getRow() == row && cur.getCol() == col) {
+				objects.add(cur);
+			}
+		}
+		return objects;
+	}
+
+	public boolean canPassThrough(UnlockedFromGrid moving, int row, int col) {
+		for (LockedToGrid obj : grid[row][col]) {
+			if (obj != null && !obj.canPassThrough(moving)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

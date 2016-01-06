@@ -3,9 +3,14 @@ package main;
 import interfaces.Drawable;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -30,6 +35,8 @@ public class GamePanel extends JPanel {
 	private final double MIN_ZOOM = .4, MAX_ZOOM = 2;
 	private AffineTransform cameraTransform;
 
+	private Menu sideMenu;
+
 	public GamePanel(int width, int height, Map map) {
 
 		this.map = map;
@@ -38,7 +45,7 @@ public class GamePanel extends JPanel {
 
 		setUpCamera();
 	}
-	
+
 	public Map getMap() {
 		return map;
 	}
@@ -49,23 +56,23 @@ public class GamePanel extends JPanel {
 
 		zoom = MIN_ZOOM;
 	}
-	
+
 	public int[] adjustPointForCamera(int oldX, int oldY) {
-		
+
 		AffineTransform inverse = null;
-		
+
 		try {
 			inverse = cameraTransform.createInverse();
 		} catch (NoninvertibleTransformException e) {
 			e.printStackTrace();
 		}
-		
+
 		Point point = new Point(oldX, oldY);
-		
+
 		inverse.transform(point, point);
-		
-		return new int[] {point.x, point.y};
-		
+
+		return new int[] { point.x, point.y };
+
 	}
 
 	public void moveCamera(int deltaX, int deltaY) {
@@ -82,13 +89,24 @@ public class GamePanel extends JPanel {
 	}
 
 	private void setUpFrame(int width, int height) {
+
 		frame = new JFrame();
 
 		frame.add(this);
 
-		setPreferredSize(new Dimension(width, height));
+		Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 
-		frame.setResizable(false);
+		frame.setPreferredSize(screenSize);
+
+		frame.setMaximumSize(screenSize);
+
+		frame.setMinimumSize(new Dimension(width, height));
+
+		sideMenu = new Menu(this);
+
+		sideMenu.setBounds(600, 600, width, height);
+
+		this.add(sideMenu);
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -110,8 +128,9 @@ public class GamePanel extends JPanel {
 
 		for (UnlockedFromGrid cur : map.getUnlockedObjects()) {
 			cur.update();
+			cur.updateInternalTime();
 		}
-		
+
 	}
 
 	public JFrame getFrame() {
@@ -123,22 +142,24 @@ public class GamePanel extends JPanel {
 
 		Graphics2D g2d = (Graphics2D) g;
 
+		AffineTransform defaultTransform = g2d.getTransform();
+
 		g2d.setColor(Color.BLACK);
 
 		g2d.fillRect(0, 0, getWidth(), getHeight());
-		
+
 		cameraTransform = new AffineTransform();
-		
+
 		cameraTransform.translate(getWidth() / 2, getHeight() / 2);
-		
+
 		cameraTransform.scale(zoom, zoom);
-		
+
 		cameraTransform.translate(-getWidth() / 2, -getHeight() / 2);
 
 		cameraTransform.translate(-cameraX, -cameraY);
 
 		cameraTransform.translate(getWidth() / 2, getHeight() / 2);
-		
+
 		g2d.transform(cameraTransform);
 
 		for (LockedToGrid[][] row : map.getGrid()) {
@@ -156,5 +177,9 @@ public class GamePanel extends JPanel {
 		for (UnlockedFromGrid cur : map.getUnlockedObjects()) {
 			cur.draw(g2d, false);
 		}
+
+		g2d.setTransform(defaultTransform);
+
+		sideMenu.draw(g2d, false);
 	}
 }
