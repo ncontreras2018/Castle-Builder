@@ -1,6 +1,7 @@
 package people;
 
 import interfaces.Drawable;
+import main.Player;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -10,17 +11,16 @@ import java.util.ArrayList;
 import tasks.Task;
 import threads.PathfindingThread;
 import throwables.IllegalLocationException;
-import util.Util;
 import abstractClasses.UnlockedFromGrid;
 
 abstract public class Person extends UnlockedFromGrid {
 
-	private int player;
+	private Player player;
 	private static PathfindingThread pathfinder;
 
 	private Task currentTask;
 
-	public Person(int xPos, int yPos, double speed, int player) throws IllegalLocationException {
+	public Person(int xPos, int yPos, double speed, Player player) throws IllegalLocationException {
 		super(xPos, yPos, speed, 20);
 		this.player = player;
 
@@ -33,6 +33,9 @@ abstract public class Person extends UnlockedFromGrid {
 
 	@Override
 	public void update() {
+
+		System.out.println("UPDATE " + this + " ----------------------------");
+
 		if (shouldDoTasks()) {
 			doTasks();
 		} else {
@@ -40,8 +43,12 @@ abstract public class Person extends UnlockedFromGrid {
 		}
 	}
 
-	public int getPlayer() {
+	public Player getPlayer() {
 		return player;
+	}
+
+	protected PathfindingThread getPathfinder() {
+		return pathfinder;
 	}
 
 	/**
@@ -52,8 +59,8 @@ abstract public class Person extends UnlockedFromGrid {
 	 */
 
 	protected boolean shouldDoTasks() {
-		System.out.println("Has Task: " + Task.hasApplicableTaskFor(this) + " or " + (currentTask != null));
-		return Task.hasApplicableTaskFor(this) || currentTask != null;
+		System.out.println("Has Task: " + (currentTask != null) + " or " + Task.hasApplicableTaskFor(this));
+		return currentTask != null || Task.hasApplicableTaskFor(this);
 	}
 
 	/**
@@ -62,42 +69,76 @@ abstract public class Person extends UnlockedFromGrid {
 	 * @return the result, where 0 indicates normal movement, 1 indicates an
 	 *         arrival, and -1 indicates an inability to move
 	 */
+	
+	public void releaseTask() {
+		currentTask = null;
+	}
 
-	private int moveTowardsTile(int row, int col) {
+	private boolean moveTowardsTile(int row, int col) {
 
 		double newX = getX();
 
 		double newY = getY();
 
-		int state = 1;
+		boolean arrived = true;
 
 		int targX = (col * getMap().getTileSize()) + (getMap().getTileSize() / 2);
 		int targY = (row * getMap().getTileSize()) + (getMap().getTileSize() / 2);
 
 		if (Math.abs(getX() - targX) > getSpeed()) {
 			newX += ((targX - getX()) / Math.abs(targX - getX())) * getSpeed();
-			state = 0;
+			arrived = false;
 		} else {
 			newX = targX;
 		}
 
 		if (Math.abs(getY() - targY) > getSpeed()) {
 			newY += ((targY - getY()) / Math.abs(targY - getY())) * getSpeed();
-			state = 0;
+			arrived = false;
 		} else {
 			newY = targY;
 		}
 
-		if (!this.setLocation(newX, newY)) {
-			state = -1;
-		}
+		this.setLocation(newX, newY);
 
-		return state;
+		return arrived;
+	}
+
+	protected void autoMoveTo(int row, int col, boolean adjacent) {
+
+		System.out.println("Auto move to Row: " + row + " Col " + col);
+
+		if (pathfinder.getPathFor(this) == null) {
+
+			System.out.println("Path is null");
+
+			if (!pathfinder.hasRequestFor(this)) {
+				System.out.println("There is no request, placing one");
+				pathfinder.requestPath(this, row, col, adjacent);
+			}
+		} else if (pathfinder.getPathFor(this).isEmpty()) {
+
+			System.out.println("Path is empty, requesting new one");
+			pathfinder.requestPath(this, row, col, adjacent);
+		} else {
+
+			System.out.println("Path is not null or empty");
+
+			int[] nextTile = pathfinder.getPathFor(this).get(0);
+
+			System.out.println("Next Tile: Row: " + nextTile[0] + " Col: " + nextTile[1]);
+
+			boolean arrived = moveTowardsTile(nextTile[0], nextTile[1]);
+
+			System.out.println("Arrived at next tile: " + arrived);
+
+			if (arrived) {
+				pathfinder.getPathFor(this).remove(0);
+			}
+		}
 	}
 
 	protected void doTasks() {
-
-		System.out.println("-----------------------------------");
 
 		System.out.println("Doing Tasks");
 
@@ -109,46 +150,27 @@ abstract public class Person extends UnlockedFromGrid {
 
 			currentTask.assignPerson(this);
 
-			pathfinder.requestPath(this, currentTask.getRow(), currentTask.getCol());
-
 			System.out.println("Got new Task: " + currentTask);
+
 		} else {
+			System.out.println("Current Task is not null: " + currentTask);
 
-			System.out.println("Current Task is not null");
+			if (currentTask.isAtLocation(this)) {
 
-			if (pathfinder.getPathFor(this) != null) {
+				System.out.println("At Task Location");
 
-				System.out.println("Path is not null");
+				currentTask.doWork(getMillisSinceLastUpdate());
 
-				if (currentTask.isAtLocation(this)) {
+				if (currentTask.isDone()) {
 
-					System.out.println("At job location, doing work");
+					System.out.println(this + " has finished task " + currentTask);
 
-					currentTask.doWork(getMillisSinceLastUpdate());
-
-					if (currentTask.isDone()) {
-						currentTask.finish();
-						currentTask = null;
-					}
-				} else {
-
-					if (!pathfinder.getPathFor(this).isEmpty()) {
-
-						int[] nextTile = (pathfinder.getPathFor(this).get(0));
-
-						int result = moveTowardsTile(nextTile[0], nextTile[1]);
-
-						if (result == 1) {
-							pathfinder.getPathFor(this).remove(0);
-						} else if (result == -1) {
-							pathfinder.requestPath(this, currentTask.getRow(), currentTask.getCol());
-						}
-
-						System.out.println("Moved up path to: " + getX() + " " + getY());
-					}
+					currentTask.finish();
+					currentTask = null;
+					pathfinder.removePathFor(this);
 				}
 			} else {
-				System.out.println("Path is null");
+				autoMoveTo(currentTask.getRow(), currentTask.getCol(), currentTask.shouldBeAdjacent());
 			}
 		}
 	}

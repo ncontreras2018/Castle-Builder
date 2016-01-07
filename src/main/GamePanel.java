@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import objects.VisibleObject;
 import tasks.Construction;
 import abstractClasses.LockedToGrid;
 import abstractClasses.UnlockedFromGrid;
@@ -32,14 +31,16 @@ public class GamePanel extends JPanel {
 
 	private int cameraX, cameraY;
 	private double zoom;
-	private final double MIN_ZOOM = .4, MAX_ZOOM = 2;
+	private final double MIN_ZOOM = .3, MAX_ZOOM = 2;
 	private AffineTransform cameraTransform;
-
-	private Menu sideMenu;
+	
+	private Player player;
 
 	public GamePanel(int width, int height, Map map) {
 
 		this.map = map;
+		
+		player = new Player(Color.BLUE, 1, this);
 
 		setUpFrame(width, height);
 
@@ -48,6 +49,10 @@ public class GamePanel extends JPanel {
 
 	public Map getMap() {
 		return map;
+	}
+	
+	public Player getPlayer() {
+		return player;
 	}
 
 	private void setUpCamera() {
@@ -102,12 +107,6 @@ public class GamePanel extends JPanel {
 
 		frame.setMinimumSize(new Dimension(width, height));
 
-		sideMenu = new Menu(this);
-
-		sideMenu.setBounds(600, 600, width, height);
-
-		this.add(sideMenu);
-
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		frame.pack();
@@ -126,11 +125,11 @@ public class GamePanel extends JPanel {
 			}
 		}
 
-		for (UnlockedFromGrid cur : map.getUnlockedObjects()) {
+		for (int i = 0; i < map.getUnlockedObjects().size(); i++) {
+			UnlockedFromGrid cur = map.getUnlockedObjects().get(i);
 			cur.update();
 			cur.updateInternalTime();
 		}
-
 	}
 
 	public JFrame getFrame() {
@@ -177,9 +176,5 @@ public class GamePanel extends JPanel {
 		for (UnlockedFromGrid cur : map.getUnlockedObjects()) {
 			cur.draw(g2d, false);
 		}
-
-		g2d.setTransform(defaultTransform);
-
-		sideMenu.draw(g2d, false);
 	}
 }

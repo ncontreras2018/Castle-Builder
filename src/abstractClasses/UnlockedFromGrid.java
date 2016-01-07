@@ -4,7 +4,6 @@ import java.awt.Point;
 
 import interfaces.Drawable;
 import throwables.IllegalLocationException;
-import util.Util;
 
 abstract public class UnlockedFromGrid extends Existent implements Drawable {
 
@@ -14,11 +13,11 @@ abstract public class UnlockedFromGrid extends Existent implements Drawable {
 
 	private int size;
 
+	private final boolean ALLOW_ESCAPEMENT = true;
+
 	public UnlockedFromGrid(int xPos, int yPos, double speed, int size) throws IllegalLocationException {
 
-		if (!setLocation(xPos, yPos)) {
-			throw new IllegalLocationException("Attempting To Create " + this + " At An Already Occupied Location");
-		}
+		setLocation(xPos, yPos);
 
 		movementSpeed = speed;
 		this.size = size;
@@ -28,45 +27,16 @@ abstract public class UnlockedFromGrid extends Existent implements Drawable {
 		return size;
 	}
 
-	private boolean somethingInWayOfMe(double x, double y) {
+	public void setLocation(double x, double y) {
 
-		System.out.println("Checking for object at X: " + x + " Y: " + y);
-
-		for (LockedToGrid layer : Util.getGridObjectsAt(x, y)) {
-
-			System.out.println("Checking layer with: " + layer);
-
-			if (layer != null) {
-
-				if (!layer.canPassThrough(this)) {
-
-					System.out.println("^Cannot pass through above layer^");
-
-					return true;
-				}
-			}
-		}
-
-		return false;
-
-	}
-
-	public boolean setLocation(double x, double y) {
-
-		System.out.println("Setting Location With Check To X: " + x + " Y: " + y);
-
-		if (somethingInWayOfMe(x, y)) {
-			return false;
-		}
+		System.out.println("Setting Location To X: " + x + " Y: " + y);
 
 		xPos = x;
 		yPos = y;
-
-		return true;
 	}
 
-	public boolean setLocation(int[] location) {
-		return setLocation(location[0], location[1]);
+	public void setLocation(int[] location) {
+		setLocation(location[0], location[1]);
 	}
 
 	public double[] getLocation() {

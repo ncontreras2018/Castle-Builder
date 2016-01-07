@@ -2,6 +2,7 @@ package abstractClasses;
 
 import interfaces.Drawable;
 import main.Map;
+import objects.Nexus;
 
 abstract public class Existent {
 
@@ -9,6 +10,8 @@ abstract public class Existent {
 
 	private long timeAtLastUpdate;
 	private long millisSinceLastUpdate;
+	
+	private static Nexus nexus;
 
 	public Existent() {
 		updateInternalTime();
@@ -24,10 +27,26 @@ abstract public class Existent {
 		millisSinceLastUpdate = System.currentTimeMillis() - timeAtLastUpdate;
 		timeAtLastUpdate = System.currentTimeMillis();
 	}
+	
+	protected static void setNexus(Nexus n) {
+		nexus = n;
+	}
+	
+	protected static Nexus getNexus() {
+		return nexus;
+	}
 
 	public abstract double getX();
 
 	public abstract double getY();
+
+	public abstract int getApproxX();
+
+	public abstract int getApproxY();
+
+	public abstract int getRow();
+
+	public abstract int getCol();
 
 	public static Map getMap() {
 		return MAP;
@@ -35,5 +54,24 @@ abstract public class Existent {
 
 	protected long getMillisSinceLastUpdate() {
 		return millisSinceLastUpdate;
+	}
+	
+	public double getDistFrom(double x, double y) {
+
+		double xDist = x - getX();
+
+		double yDist = y - getY();
+
+		double distSqrd = (xDist * xDist) + (yDist * yDist);
+
+		return Math.sqrt(distSqrd);
+	}
+
+	@Override
+	public String toString() {
+		String toReturn = super.toString();
+
+		toReturn += " At Row: " + getRow() + " Col: " + getCol() + "  [Center Location: (X: " + getX() + ", Y: " + getY() + " )]";
+		return toReturn;
 	}
 }

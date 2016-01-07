@@ -4,8 +4,12 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 
 import objects.Dirt;
+import objects.Nexus;
+import objects.Ore;
+import people.Worker;
 import tasks.Construction;
 import tasks.Task;
+import abstractClasses.Existent;
 import abstractClasses.LockedToGrid;
 import abstractClasses.UnlockedFromGrid;
 
@@ -19,13 +23,20 @@ public class Map {
 
 	public Map(int rows, int cols, int tileSize) {
 
+		Existent.setMap(this);
+
 		this.tileSize = tileSize;
 
 		grid = new LockedToGrid[rows][cols][3];
+		
+		grid[grid.length / 2][grid[grid.length / 2].length / 2][1] = new Nexus(grid.length / 2,
+				grid[grid.length / 2].length / 2);
 
 		unlockedObjects = new ArrayList<UnlockedFromGrid>();
 
 		fillWithDirt();
+
+		Ore.distributeOre(.0025, 5);
 	}
 
 	public void addUnlockedObject(UnlockedFromGrid object) {
@@ -97,10 +108,10 @@ public class Map {
 			}
 		}
 	}
-	
+
 	public ArrayList<UnlockedFromGrid> getObjectsAt(int row, int col) {
 		ArrayList<UnlockedFromGrid> objects = new ArrayList<UnlockedFromGrid>();
-		
+
 		for (UnlockedFromGrid cur : unlockedObjects) {
 			if (cur.getRow() == row && cur.getCol() == col) {
 				objects.add(cur);
@@ -109,12 +120,10 @@ public class Map {
 		return objects;
 	}
 
-	public boolean canPassThrough(UnlockedFromGrid moving, int row, int col) {
-		for (LockedToGrid obj : grid[row][col]) {
-			if (obj != null && !obj.canPassThrough(moving)) {
-				return false;
-			}
-		}
-		return true;
+	public int[] convertXYtoRowCol(double x, double y) {
+		int row = (int) y / tileSize;
+		int col = (int) x / tileSize;
+
+		return new int[] { row, col };
 	}
 }

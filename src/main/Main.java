@@ -9,23 +9,18 @@ import threads.ControlThread;
 import threads.GameThread;
 import threads.GraphicsThread;
 import threads.PathfindingThread;
-import util.Util;
 
 public class Main {
 
 	public static void main(String[] args) {
 		
-		int mapRows = 81, mapCols = 121;
+		int mapRows = 121, mapCols = 81;
 		
 		int windowWidth = 1000, windowHeight = 600;
 		
 		int tileSize = 30;
 		
 		Map map = new Map(mapRows, mapCols, tileSize);
-		
-		Existent.setMap(map);
-		
-		Util.setMap(map);
 		
 		GamePanel panel = new GamePanel(windowWidth, windowHeight, map);
 		
@@ -64,14 +59,6 @@ public class Main {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
-		map.getUnlockedObjects().add(new Worker(15, 15, 1, 1));
-		
-		map.getUnlockedObjects().add(new Worker(45, 15, 1, 1));
-		
-		map.getUnlockedObjects().add(new Worker(150, 176, 1, 1));
-		
-		map.getUnlockedObjects().add(new Worker(67, 145, 1, 1));
 		
 	}
 

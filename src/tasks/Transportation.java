@@ -4,10 +4,11 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import abstractClasses.UnlockedFromGrid;
+import main.Player;
 
 public class Transportation extends Task {
 
-	public Transportation(int row, int col, int player, double timeCost, Task prerequisiteFor) {
+	public Transportation(int row, int col, Player player, double timeCost, Task prerequisiteFor) {
 		super(row, col, player, timeCost, prerequisiteFor);
 	}
 
@@ -27,5 +28,10 @@ public class Transportation extends Task {
 
 	@Override
 	public void draw(Graphics2D g2d, boolean isTransparent) {
+	}
+
+	@Override
+	public boolean shouldBeAdjacent() {
+		return false;
 	}
 }

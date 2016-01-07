@@ -9,7 +9,6 @@ import objects.Wall;
 import tasks.Construction;
 import tasks.Demolition;
 import tasks.Task;
-import util.Util;
 import main.GamePanel;
 
 public class MouseListener implements java.awt.event.MouseListener, MouseMotionListener, MouseWheelListener {
@@ -29,9 +28,10 @@ public class MouseListener implements java.awt.event.MouseListener, MouseMotionL
 
 			int[] adjustedPos = gamePanel.adjustPointForCamera(e.getX(), e.getY());
 
-			int[] rowCol = Util.getRowColAt(adjustedPos[0], adjustedPos[1]);
+			int[] rowCol = gamePanel.getMap().convertXYtoRowCol(adjustedPos[0], adjustedPos[1]);
 
-			Task newTask = new Construction(rowCol[0], rowCol[1], 1, new Wall(rowCol[0], rowCol[1]), true);
+			Task newTask = new Construction(rowCol[0], rowCol[1], gamePanel.getPlayer(), new Wall(rowCol[0], rowCol[1]),
+					true);
 
 			gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][2] = newTask;
 
@@ -40,13 +40,13 @@ public class MouseListener implements java.awt.event.MouseListener, MouseMotionL
 
 			int[] adjustedPos = gamePanel.adjustPointForCamera(e.getX(), e.getY());
 
-			int[] rowCol = Util.getRowColAt(adjustedPos[0], adjustedPos[1]);
+			int[] rowCol = gamePanel.getMap().convertXYtoRowCol(adjustedPos[0], adjustedPos[1]);
 
-			gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][2] = null;
+			((Task) gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][2]).remove();
 
 			if (gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][1] != null) {
 
-				Task newTask = new Demolition(rowCol[0], rowCol[1], 1, null);
+				Task newTask = new Demolition(rowCol[0], rowCol[1], gamePanel.getPlayer(), null);
 
 				gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][2] = newTask;
 
@@ -84,7 +84,7 @@ public class MouseListener implements java.awt.event.MouseListener, MouseMotionL
 
 		System.out.println("Adjusted X: " + adjustedPos[0] + " Y: " + adjustedPos[1]);
 
-		int[] rowCol = Util.getRowColAt(adjustedPos[0], adjustedPos[1]);
+		int[] rowCol = gamePanel.getMap().convertXYtoRowCol(adjustedPos[0], adjustedPos[1]);
 
 		System.out.println("Row: " + rowCol[0] + " Col: " + rowCol[1]);
 

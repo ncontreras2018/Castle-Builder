@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import abstractClasses.LockedToGrid;
 import abstractClasses.UnlockedFromGrid;
 import interfaces.Drawable;
+import main.Player;
 import people.Person;
-import util.Util;
 
 public abstract class Task extends LockedToGrid implements Drawable {
 
 	private static ArrayList<Task> globalTaskList = new ArrayList<Task>();
 
-	private int player;
+	private Player player;
 
 	private long timeCost, timeSpent;
 
@@ -22,11 +22,11 @@ public abstract class Task extends LockedToGrid implements Drawable {
 
 	private Task prerequisiteFor;
 
-	public Task(int row, int col, int player, double timeCost) {
+	public Task(int row, int col, Player player, double timeCost) {
 		this(row, col, player, timeCost, null);
 	}
 
-	public Task(int row, int col, int player, double timeCost, Task prerequisiteFor) {
+	public Task(int row, int col, Player player, double timeCost, Task prerequisiteFor) {
 		super(row, col);
 		this.player = player;
 		this.timeCost = Math.round(timeCost * 1000);
@@ -99,10 +99,14 @@ public abstract class Task extends LockedToGrid implements Drawable {
 
 		return mostImportant;
 	}
+	
+	public Person getAssignedPerson() {
+		return personAssigned;
+	}
 
 	private boolean canDoTask(Person p) {
 
-		if (this.getPlayer() == p.getPlayer()) {
+		if (this.player.equals(p.getPlayer())) {
 			if (this.getTypeNeeded().isInstance(p)) {
 				if (this.getPrerequisites().isEmpty()) {
 					return true;
@@ -111,6 +115,8 @@ public abstract class Task extends LockedToGrid implements Drawable {
 		}
 		return false;
 	}
+
+	public abstract boolean shouldBeAdjacent();
 
 	/**
 	 * Gets the priority of the task, where a higher number indicates a higher
@@ -137,7 +143,7 @@ public abstract class Task extends LockedToGrid implements Drawable {
 		return null;
 	}
 
-	public int getPlayer() {
+	public Player getPlayer() {
 		return player;
 	}
 
@@ -146,47 +152,61 @@ public abstract class Task extends LockedToGrid implements Drawable {
 	}
 
 	public void assignPerson(Person p) {
+
+		if (personAssigned != null) {
+			System.out.println(this + " already is assigned but " + p + " has claimed it");
+		}
+
 		personAssigned = p;
+	}
+
+	public void remove() {
+
+		System.out.println("Removing: " + this);
+
+		if (personAssigned != null) {
+
+			personAssigned.releaseTask();
+
+			personAssigned = null;
+
+		}
+
+		globalTaskList.remove(this);
+
+		getMap().getGrid()[getRow()][getCol()][2] = null;
 	}
 
 	public void doWork(long timeSpent) {
 		System.out.println("Did work: " + timeSpent);
 		this.timeSpent += timeSpent;
 	}
-
+	
 	public boolean isAtLocation(UnlockedFromGrid object) {
 		// return Util.isAdjacentTo(object, this);
 
-		for (int[] curPos : getNearbyWorkingLocs()) {
-			if (object.getApproxX() == curPos[0] && object.getApproxY() == curPos[1]) {
-				return true;
+		if (shouldBeAdjacent()) {
+			for (int[] curPos : getNearbyLocs()) {
+				if (object.getApproxX() == curPos[0] && object.getApproxY() == curPos[1]) {
+					return true;
+				}
 			}
+			return false;
+		} else {
+			return getApproxX() == object.getApproxX() && getApproxY() == object.getApproxY();
 		}
-		return false;
 	}
-
-	private ArrayList<int[]> getNearbyWorkingLocs() {
-		ArrayList<int[]> locs = new ArrayList<int[]>();
-
-		locs.add(new int[] { getApproxX() + getMap().getTileSize(), getApproxY() });
-		locs.add(new int[] { getApproxX() - getMap().getTileSize(), getApproxY() });
-		locs.add(new int[] { getApproxX(), getApproxY() + getMap().getTileSize() });
-		locs.add(new int[] { getApproxX(), getApproxY() - getMap().getTileSize() });
-
-		return locs;
-	}
-
-	@Override
-	public boolean canPassThrough(UnlockedFromGrid other) {
-		return true;
+	
+	public static ArrayList<Task> getTaskList() {
+		return globalTaskList;
 	}
 
 	@Override
 	public String toString() {
 		String toReturn = super.toString();
 
-		toReturn += " Location { Row:" + getRow() + " Col: " + getCol() + " } Type Needed: " + getTypeNeeded()
-				+ " Person Assigned: " + personAssigned + " Time Cost: " + timeCost + " Work Done " + timeSpent;
+		toReturn += " Type Needed: " + getTypeNeeded() + " Person Assigned: " + personAssigned + " Time Cost: "
+				+ timeCost + " Work Done " + timeSpent;
 
 		return toReturn;
 	}
@@ -195,5 +215,10 @@ public abstract class Task extends LockedToGrid implements Drawable {
 		if (isPrerequisite()) {
 			prerequisiteFor.getPrerequisites().remove(this);
 		}
+	}
+	
+	@Override
+	public double movementPenalty(UnlockedFromGrid other) {
+		return 2;
 	}
 }

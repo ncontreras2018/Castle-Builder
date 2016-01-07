@@ -4,13 +4,15 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
+import main.Player;
+
 public class Demolition extends Task {
 
-	public Demolition(int row, int col, int player, Task prerequisiteFor) {
+	public Demolition(int row, int col, Player player, Task prerequisiteFor) {
 		super(row, col, player, 2, prerequisiteFor);
 	}
 	
-	public Demolition(int row, int col, int player) {
+	public Demolition(int row, int col, Player player) {
 		this(row, col, player, null);
 	}
 
@@ -38,5 +40,10 @@ public class Demolition extends Task {
 			getMap().getGrid()[getRow()][getCol()][1] = null;
 			getMap().getGrid()[getRow()][getCol()][2] = null;
 		}
+	}
+	
+	@Override
+	public boolean shouldBeAdjacent() {
+		return true;
 	}
 }

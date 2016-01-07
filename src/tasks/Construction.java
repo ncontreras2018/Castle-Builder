@@ -1,22 +1,23 @@
 package tasks;
 
 import interfaces.Drawable;
+import main.Player;
 
 import java.awt.Graphics2D;
 import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
 
+import abstractClasses.LockedToGrid;
 import abstractClasses.UnlockedFromGrid;
-import objects.VisibleObject;
 import people.Person;
 
 public class Construction extends Task {
 
-	private VisibleObject toBuild;
+	private LockedToGrid toBuild;
 
 	private boolean isPlaced;
 
-	public Construction(int row, int col, int player, VisibleObject toBuild, boolean isPlaced) {
+	public Construction(int row, int col, Player player, LockedToGrid toBuild, boolean isPlaced) {
 		super(row, col, player, 5);
 
 		this.toBuild = toBuild;
@@ -68,12 +69,6 @@ public class Construction extends Task {
 			return false;
 		}
 
-		for (UnlockedFromGrid obj : getMap().getObjectsAt(getRow(), getCol())) {
-			if (!toBuild.canPassThrough(obj)) {
-				return false;
-			}
-		}
-
 		return true;
 
 	}
@@ -86,5 +81,10 @@ public class Construction extends Task {
 			prereqs.add(new Demolition(getRow(), getCol(), getPlayer(), this));
 		}
 		return prereqs;
+	}
+
+	@Override
+	public boolean shouldBeAdjacent() {
+		return true;
 	}
 }

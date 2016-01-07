@@ -8,7 +8,7 @@ import java.awt.Graphics2D;
 import abstractClasses.LockedToGrid;
 import abstractClasses.UnlockedFromGrid;
 
-public class Dirt extends LockedToGrid implements Drawable {
+public class Dirt extends LockedToGrid {
 
 	private final double COLOR_DIFFERENCE;
 
@@ -42,7 +42,7 @@ public class Dirt extends LockedToGrid implements Drawable {
 	}
 
 	@Override
-	public boolean canPassThrough(UnlockedFromGrid other) {
-		return true;
+	public double movementPenalty(UnlockedFromGrid other) {
+		return 1;
 	}
 }

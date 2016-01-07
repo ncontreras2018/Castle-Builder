@@ -1,10 +1,11 @@
 package threads;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import tasks.Task;
-import util.Util;
+import abstractClasses.LockedToGrid;
 import abstractClasses.UnlockedFromGrid;
 import main.Map;
 
@@ -15,17 +16,34 @@ public class PathfindingThread extends Thread {
 
 	private HashMap<UnlockedFromGrid, ArrayList<int[]>> pathsFound;
 
+	private final double WALL_PENALTY_FACTOR = 1000;
+
+	private final double TASK_PENALTY_FACTOR = 1.1;
+
 	public PathfindingThread(Map map) {
 		this.map = map;
 		pathFindingRequests = new ArrayList<Object[]>();
 		pathsFound = new HashMap<UnlockedFromGrid, ArrayList<int[]>>();
 	}
 
-	public void requestPath(UnlockedFromGrid objectNeedingPath, int targRow, int targCol) {
+	public void requestPath(UnlockedFromGrid objectNeedingPath, int targRow, int targCol, boolean adjacent) {
+
+		Object[] request = new Object[] { objectNeedingPath, targRow, targCol, adjacent };
 
 		removePathFor(objectNeedingPath);
 
-		pathFindingRequests.add(new Object[] { objectNeedingPath, targRow, targCol });
+		pathFindingRequests.add(request);
+
+		System.out.println("Pathfinding request placed for: " + objectNeedingPath);
+	}
+
+	public boolean hasRequestFor(UnlockedFromGrid objectNeedingPath) {
+		for (Object[] oldRequest : pathFindingRequests) {
+			if (oldRequest[0].equals(objectNeedingPath)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void removePathFor(UnlockedFromGrid objectNeedingPath) {
@@ -43,7 +61,7 @@ public class PathfindingThread extends Thread {
 			System.out.println("Pathfinder tick");
 
 			if (pathFindingRequests.size() > 0) {
-				Object[] currentRequest = pathFindingRequests.remove(0);
+				Object[] currentRequest = pathFindingRequests.get(0);
 
 				System.out.println("Pathfinder has request");
 
@@ -53,12 +71,13 @@ public class PathfindingThread extends Thread {
 				int targetRow = (int) currentRequest[1];
 				int targetCol = (int) currentRequest[2];
 
-				int[][] mapMesh = mapMesh(targetRow, targetCol, objectRow, objectCol,
-						(UnlockedFromGrid) currentRequest[0]);
+				double[][] mapMesh = mapMesh(targetRow, targetCol, objectRow, objectCol,
+						(UnlockedFromGrid) currentRequest[0], (boolean) currentRequest[3]);
 
 				if (mapMesh != null) {
 
-					ArrayList<int[]> pathFound = getPathFromMesh(objectRow, objectCol, mapMesh);
+					ArrayList<int[]> pathFound = getPathFromMesh(objectRow, objectCol, mapMesh,
+							(boolean) currentRequest[3]);
 
 					pathsFound.put((UnlockedFromGrid) currentRequest[0], pathFound);
 
@@ -68,6 +87,8 @@ public class PathfindingThread extends Thread {
 				} else {
 					System.out.println("Path Mesh is null, request dumped");
 				}
+
+				pathFindingRequests.remove(0);
 			}
 
 			try {
@@ -78,7 +99,7 @@ public class PathfindingThread extends Thread {
 		}
 	}
 
-	private ArrayList<int[]> getPathFromMesh(int startRow, int startCol, int[][] pathMesh) {
+	private ArrayList<int[]> getPathFromMesh(int startRow, int startCol, double[][] pathMesh, boolean adjacent) {
 
 		ArrayList<int[]> pathFound = new ArrayList<int[]>();
 
@@ -89,56 +110,66 @@ public class PathfindingThread extends Thread {
 
 			pathFound.add(new int[] { curRow, curCol });
 
-			int curCycle = pathMesh[curRow][curCol];
+			double curCycle = pathMesh[curRow][curCol];
 
 			System.out.println("Currently at cycle: " + curCycle);
 
-			System.out.println("Cur Row: " + curRow + " Cur Col " + curCol);
+			System.out.println("Cur Row: " + curRow + "   Cur Col: " + curCol);
 
-			if (curCycle == 1) {
-				return pathFound;
-			}
+			int bestRow = curRow;
+			int bestCol = curCol;
 
-			if (curRow + 1 < pathMesh.length) {
-				if (pathMesh[curRow + 1][curCol] == curCycle - 1) {
-					curRow = curRow + 1;
-					System.out.println("Added Row: " + curRow + " Col " + curCol);
-					continue;
+			double bestScore = pathMesh[bestRow][bestCol];
+			
+			if (curRow + 1 >= 0) {
+				if (pathMesh[curRow + 1][curCol] < bestScore && pathMesh[curRow + 1][curCol] != 0) {
+					bestRow = curRow + 1;
+					bestCol = curCol;
 				}
 			}
 
 			if (curRow - 1 >= 0) {
-				if (pathMesh[curRow - 1][curCol] == curCycle - 1) {
-					curRow = curRow - 1;
-					System.out.println("Added Row: " + curRow + " Col " + curCol);
-					continue;
+				if (pathMesh[curRow - 1][curCol] < bestScore && pathMesh[curRow - 1][curCol] != 0) {
+					bestRow = curRow - 1;
+					bestCol = curCol;
 				}
 			}
+
+			bestScore = pathMesh[bestRow][bestCol];
 
 			if (curCol + 1 < pathMesh[curRow].length) {
-				if (pathMesh[curRow][curCol + 1] == curCycle - 1) {
-					curCol = curCol + 1;
-					System.out.println("Added Row: " + curRow + " Col " + curCol);
-					continue;
+				if (pathMesh[curRow][curCol + 1] < bestScore && pathMesh[curRow][curCol + 1] != 0) {
+					bestRow = curRow;
+					bestCol = curCol + 1;
 				}
 			}
+
+			bestScore = pathMesh[bestRow][bestCol];
 
 			if (curCol - 1 >= 0) {
-				if (pathMesh[curRow][curCol - 1] == curCycle - 1) {
-					curCol = curCol - 1;
-					System.out.println("Added Row: " + curRow + " Col " + curCol);
-					continue;
+				if (pathMesh[curRow][curCol - 1] < bestScore && pathMesh[curRow][curCol - 1] != 0) {
+					bestRow = curRow;
+					bestCol = curCol - 1;
 				}
 			}
+			
+			if (bestRow == curRow && bestCol == curCol) {
+				return pathFound;
+			}
 
-			System.out.println("***Oh, no! No Path!***");
+			System.out.println("Added Row: " + bestRow + " Col: " + bestCol + " Index: " + bestScore);
 
+			bestScore = pathMesh[bestRow][bestCol];
+
+			curRow = bestRow;
+			curCol = bestCol;
 		}
 	}
 
-	private int[][] mapMesh(int targRow, int targCol, int objectRow, int objectCol, UnlockedFromGrid obj) {
+	private double[][] mapMesh(int targRow, int targCol, int objectRow, int objectCol, UnlockedFromGrid obj,
+			boolean adjacent) {
 
-		int[][] pathMesh = new int[map.numRows()][map.numCols()];
+		double[][] pathMesh = new double[map.numRows()][map.numCols()];
 
 		pathMesh[targRow][targCol] = 1;
 
@@ -156,8 +187,14 @@ public class PathfindingThread extends Thread {
 
 			for (int[] nodeLoc : lastNodes) {
 
-				if (nodeLoc[0] == objectRow && nodeLoc[1] == objectCol) {
-					return pathMesh;
+				if (cycle > 2) {
+
+					if (nodeLoc[0] == objectRow && nodeLoc[1] == objectCol) {
+
+						pathMesh[targRow][targCol] = 1;
+
+						return pathMesh;
+					}
 				}
 
 				newNodes.addAll(mapNearbyTiles(nodeLoc[0], nodeLoc[1], cycle, pathMesh, obj));
@@ -180,51 +217,55 @@ public class PathfindingThread extends Thread {
 		}
 	}
 
-	private ArrayList<int[]> mapNearbyTiles(int row, int col, int cycle, int[][] pathMesh, UnlockedFromGrid obj) {
+	private ArrayList<int[]> mapNearbyTiles(int row, int col, double cycle, double[][] pathMesh, UnlockedFromGrid obj) {
 
 		System.out.println("Mapping Nearby Tiles for Row: " + row + " Col " + col);
 
-		System.out.println("Mapping cycle: " + (cycle + 1));
+		System.out.println("This tile has a index of: " + cycle);
 
 		ArrayList<int[]> newTileLocs = new ArrayList<int[]>();
 
 		if (row + 1 < pathMesh.length) {
-			if (pathMesh[row + 1][col] > cycle + 1 || pathMesh[row + 1][col] == 0) {
-				if (map.canPassThrough(obj, row + 1, col)) {
-					pathMesh[row + 1][col] = cycle;
-					newTileLocs.add(new int[] { row + 1, col });
-				}
+			if (pathMesh[row + 1][col] > getPenalty(obj, cycle) || pathMesh[row + 1][col] == 0) {
+				pathMesh[row + 1][col] = getPenalty(obj, cycle);
+				newTileLocs.add(new int[] { row + 1, col });
 			}
 		}
 
 		if (row - 1 >= 0) {
-			if (pathMesh[row - 1][col] > cycle + 1 || pathMesh[row - 1][col] == 0) {
-				if (map.canPassThrough(obj, row - 1, col)) {
-					pathMesh[row - 1][col] = cycle;
-					newTileLocs.add(new int[] { row - 1, col });
-				}
+			if (pathMesh[row - 1][col] > getPenalty(obj, cycle) || pathMesh[row - 1][col] == 0) {
+				pathMesh[row - 1][col] = getPenalty(obj, cycle);
+				newTileLocs.add(new int[] { row - 1, col });
 			}
 		}
 
 		if (col + 1 < pathMesh[row].length) {
-			if (pathMesh[row][col + 1] > cycle + 1 || pathMesh[row][col + 1] == 0) {
-				if (map.canPassThrough(obj, row, col + 1)) {
-					pathMesh[row][col + 1] = cycle;
-					newTileLocs.add(new int[] { row, col + 1 });
-				}
+			if (pathMesh[row][col + 1] > getPenalty(obj, cycle) || pathMesh[row][col + 1] == 0) {
+				pathMesh[row][col + 1] = getPenalty(obj, cycle);
+				newTileLocs.add(new int[] { row, col + 1 });
 			}
 		}
 
 		if (col - 1 >= 0) {
-			if (pathMesh[row][col - 1] > cycle + 1 || pathMesh[row][col - 1] == 0) {
-				if (map.canPassThrough(obj, row, col - 1)) {
-					pathMesh[row][col - 1] = cycle;
-					newTileLocs.add(new int[] { row, col - 1 });
-				}
+			if (pathMesh[row][col - 1] > getPenalty(obj, cycle) || pathMesh[row][col - 1] == 0) {
+				pathMesh[row][col - 1] = getPenalty(obj, cycle);
+				newTileLocs.add(new int[] { row, col - 1 });
 			}
 		}
 
 		return newTileLocs;
 
+	}
+
+	private double getPenalty(UnlockedFromGrid object, double cycle) {
+
+		double total = 1;
+
+		for (LockedToGrid cur : map.getGrid()[object.getRow()][object.getCol()]) {
+			if (cur != null) {
+				total *= cur.movementPenalty(object);
+			}
+		}
+		return cycle + total;
 	}
 }
