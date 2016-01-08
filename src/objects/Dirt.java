@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import abstractClasses.LockedToGrid;
+import abstractClasses.Task;
 import abstractClasses.UnlockedFromGrid;
 
 public class Dirt extends LockedToGrid {
@@ -44,5 +45,15 @@ public class Dirt extends LockedToGrid {
 	@Override
 	public double movementPenalty(UnlockedFromGrid other) {
 		return 1;
+	}
+
+	@Override
+	public boolean canMoveThrough(UnlockedFromGrid obj) {
+		return true;
+	}
+	
+	@Override
+	public boolean taskCanBePreformed(Task attemptedTask) {
+		return false;
 	}
 }

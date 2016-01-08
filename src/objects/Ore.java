@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import abstractClasses.LockedToGrid;
+import abstractClasses.Task;
 import abstractClasses.UnlockedFromGrid;
+import tasks.Mining;
 
 public class Ore extends LockedToGrid {
 
@@ -23,6 +25,16 @@ public class Ore extends LockedToGrid {
 					createOrePatch(row, col, depositSize);
 				}
 			}
+		}
+	}
+	
+	@Override
+	public boolean taskCanBePreformed(Task attemptedTask) {
+		
+		if (attemptedTask instanceof Mining) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -73,5 +85,11 @@ public class Ore extends LockedToGrid {
 
 	@Override
 	public void update() {
+	}
+
+	@Override
+	public boolean canMoveThrough(UnlockedFromGrid obj) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

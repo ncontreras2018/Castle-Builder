@@ -28,7 +28,7 @@ public class Main {
 		
 		panel.getFrame().addKeyListener(kl);
 		
-		MouseListener ml = new MouseListener(panel);
+		MouseListener ml = new MouseListener(panel, panel.getPlayer());
 		
 		panel.addMouseListener(ml);
 		

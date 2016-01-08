@@ -120,7 +120,7 @@ public class PathfindingThread extends Thread {
 			int bestCol = curCol;
 
 			double bestScore = pathMesh[bestRow][bestCol];
-			
+
 			if (curRow + 1 >= 0) {
 				if (pathMesh[curRow + 1][curCol] < bestScore && pathMesh[curRow + 1][curCol] != 0) {
 					bestRow = curRow + 1;
@@ -152,7 +152,7 @@ public class PathfindingThread extends Thread {
 					bestCol = curCol - 1;
 				}
 			}
-			
+
 			if (bestRow == curRow && bestCol == curCol) {
 				return pathFound;
 			}
@@ -187,14 +187,11 @@ public class PathfindingThread extends Thread {
 
 			for (int[] nodeLoc : lastNodes) {
 
-				if (cycle > 2) {
+				if (nodeLoc[0] == objectRow && nodeLoc[1] == objectCol) {
 
-					if (nodeLoc[0] == objectRow && nodeLoc[1] == objectCol) {
+					pathMesh[targRow][targCol] = (adjacent ? 3 : 1);
 
-						pathMesh[targRow][targCol] = 1;
-
-						return pathMesh;
-					}
+					return pathMesh;
 				}
 
 				newNodes.addAll(mapNearbyTiles(nodeLoc[0], nodeLoc[1], cycle, pathMesh, obj));
@@ -211,9 +208,7 @@ public class PathfindingThread extends Thread {
 			if (lastNodes.isEmpty()) {
 				return null;
 			}
-
 			cycle++;
-
 		}
 	}
 
@@ -226,30 +221,38 @@ public class PathfindingThread extends Thread {
 		ArrayList<int[]> newTileLocs = new ArrayList<int[]>();
 
 		if (row + 1 < pathMesh.length) {
-			if (pathMesh[row + 1][col] > getPenalty(obj, cycle) || pathMesh[row + 1][col] == 0) {
-				pathMesh[row + 1][col] = getPenalty(obj, cycle);
-				newTileLocs.add(new int[] { row + 1, col });
+			if (map.canPassThroughTile(row + 1, col, obj)) {
+				if (pathMesh[row + 1][col] > getPenalty(obj, cycle) || pathMesh[row + 1][col] == 0) {
+					pathMesh[row + 1][col] = getPenalty(obj, cycle);
+					newTileLocs.add(new int[] { row + 1, col });
+				}
 			}
 		}
 
 		if (row - 1 >= 0) {
-			if (pathMesh[row - 1][col] > getPenalty(obj, cycle) || pathMesh[row - 1][col] == 0) {
-				pathMesh[row - 1][col] = getPenalty(obj, cycle);
-				newTileLocs.add(new int[] { row - 1, col });
+			if (map.canPassThroughTile(row - 1, col, obj)) {
+				if (pathMesh[row - 1][col] > getPenalty(obj, cycle) || pathMesh[row - 1][col] == 0) {
+					pathMesh[row - 1][col] = getPenalty(obj, cycle);
+					newTileLocs.add(new int[] { row - 1, col });
+				}
 			}
 		}
 
 		if (col + 1 < pathMesh[row].length) {
-			if (pathMesh[row][col + 1] > getPenalty(obj, cycle) || pathMesh[row][col + 1] == 0) {
-				pathMesh[row][col + 1] = getPenalty(obj, cycle);
-				newTileLocs.add(new int[] { row, col + 1 });
+			if (map.canPassThroughTile(row, col + 1, obj)) {
+				if (pathMesh[row][col + 1] > getPenalty(obj, cycle) || pathMesh[row][col + 1] == 0) {
+					pathMesh[row][col + 1] = getPenalty(obj, cycle);
+					newTileLocs.add(new int[] { row, col + 1 });
+				}
 			}
 		}
 
 		if (col - 1 >= 0) {
-			if (pathMesh[row][col - 1] > getPenalty(obj, cycle) || pathMesh[row][col - 1] == 0) {
-				pathMesh[row][col - 1] = getPenalty(obj, cycle);
-				newTileLocs.add(new int[] { row, col - 1 });
+			if (map.canPassThroughTile(row, col - 1, obj)) {
+				if (pathMesh[row][col - 1] > getPenalty(obj, cycle) || pathMesh[row][col - 1] == 0) {
+					pathMesh[row][col - 1] = getPenalty(obj, cycle);
+					newTileLocs.add(new int[] { row, col - 1 });
+				}
 			}
 		}
 

@@ -87,4 +87,9 @@ public class Construction extends Task {
 	public boolean shouldBeAdjacent() {
 		return true;
 	}
+	
+	@Override
+	public boolean canMoveThrough(UnlockedFromGrid obj) {
+		return toBuild.canMoveThrough(obj);
+	}
 }

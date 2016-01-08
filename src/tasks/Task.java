@@ -152,11 +152,6 @@ public abstract class Task extends LockedToGrid implements Drawable {
 	}
 
 	public void assignPerson(Person p) {
-
-		if (personAssigned != null) {
-			System.out.println(this + " already is assigned but " + p + " has claimed it");
-		}
-
 		personAssigned = p;
 	}
 
@@ -220,5 +215,10 @@ public abstract class Task extends LockedToGrid implements Drawable {
 	@Override
 	public double movementPenalty(UnlockedFromGrid other) {
 		return 2;
+	}
+	
+	@Override
+	public boolean taskCanBePreformed(abstractClasses.Task attemptedTask) {
+		return false;
 	}
 }

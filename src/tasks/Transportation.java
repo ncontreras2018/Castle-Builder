@@ -34,4 +34,9 @@ public class Transportation extends Task {
 	public boolean shouldBeAdjacent() {
 		return false;
 	}
+
+	@Override
+	public boolean canMoveThrough(UnlockedFromGrid obj) {
+		return true;
+	}
 }

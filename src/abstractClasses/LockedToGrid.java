@@ -39,6 +39,10 @@ abstract public class LockedToGrid extends Existent implements Drawable {
 		}
 		return false;
 	}
+	
+	public abstract boolean canMoveThrough(UnlockedFromGrid obj);
+	
+	public abstract boolean taskCanBePreformed(Task attemptedTask);
 
 	protected ArrayList<int[]> getNearbyLocs() {
 		ArrayList<int[]> locs = new ArrayList<int[]>();

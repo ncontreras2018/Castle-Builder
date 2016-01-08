@@ -4,14 +4,16 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
+import abstractClasses.UnlockedFromGrid;
 import main.Player;
 
 public class Demolition extends Task {
 
 	public Demolition(int row, int col, Player player, Task prerequisiteFor) {
 		super(row, col, player, 2, prerequisiteFor);
+		System.out.println("Constructed Demo Task At Row: " + getRow() + " Col: " + getCol());
 	}
-	
+
 	public Demolition(int row, int col, Player player) {
 		this(row, col, player, null);
 	}
@@ -41,9 +43,14 @@ public class Demolition extends Task {
 			getMap().getGrid()[getRow()][getCol()][2] = null;
 		}
 	}
-	
+
 	@Override
 	public boolean shouldBeAdjacent() {
+		return true;
+	}
+
+	@Override
+	public boolean canMoveThrough(UnlockedFromGrid obj) {
 		return true;
 	}
 }

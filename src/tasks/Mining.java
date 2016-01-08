@@ -89,4 +89,9 @@ public class Mining extends Task {
 		}
 		return closest;
 	}
+
+	@Override
+	public boolean canMoveThrough(UnlockedFromGrid obj) {
+		return true;
+	}
 }

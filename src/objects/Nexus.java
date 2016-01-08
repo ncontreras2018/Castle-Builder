@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import abstractClasses.LockedToGrid;
+import abstractClasses.Task;
 import abstractClasses.UnlockedFromGrid;
 
 public class Nexus extends LockedToGrid {
@@ -32,6 +33,16 @@ public class Nexus extends LockedToGrid {
 
 	@Override
 	public void update() {
+	}
+
+	@Override
+	public boolean canMoveThrough(UnlockedFromGrid obj) {
+		return false;
+	}
+	
+	@Override
+	public boolean taskCanBePreformed(Task attemptedTask) {
+		return false;
 	}
 
 }

@@ -28,7 +28,7 @@ public class Map {
 		this.tileSize = tileSize;
 
 		grid = new LockedToGrid[rows][cols][3];
-		
+
 		grid[grid.length / 2][grid[grid.length / 2].length / 2][1] = new Nexus(grid.length / 2,
 				grid[grid.length / 2].length / 2);
 
@@ -69,6 +69,20 @@ public class Map {
 
 	public ArrayList<UnlockedFromGrid> getUnlockedObjects() {
 		return unlockedObjects;
+	}
+
+	public boolean canPassThroughTile(int row, int col, UnlockedFromGrid obj) {
+
+		for (LockedToGrid cur : grid[row][col]) {
+			
+			System.out.println("Checking: " + cur);
+
+			if (cur != null && !cur.canMoveThrough(obj)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public void removeTemporaryItems() {
@@ -123,7 +137,12 @@ public class Map {
 	public int[] convertXYtoRowCol(double x, double y) {
 		int row = (int) y / tileSize;
 		int col = (int) x / tileSize;
-
-		return new int[] { row, col };
+		
+		if (row < grid.length && row > 0) {
+			if (col < grid[row].length && col > 0) {
+				return new int[] { row, col };
+			}
+		}
+		return null;
 	}
 }
