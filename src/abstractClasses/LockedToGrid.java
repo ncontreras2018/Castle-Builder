@@ -3,6 +3,7 @@ package abstractClasses;
 import java.util.ArrayList;
 
 import interfaces.Drawable;
+import tasks.Task;
 
 abstract public class LockedToGrid extends Existent implements Drawable {
 

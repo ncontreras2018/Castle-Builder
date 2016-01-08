@@ -218,7 +218,7 @@ public abstract class Task extends LockedToGrid implements Drawable {
 	}
 	
 	@Override
-	public boolean taskCanBePreformed(abstractClasses.Task attemptedTask) {
+	public boolean taskCanBePreformed(Task attemptedTask) {
 		return false;
 	}
 }

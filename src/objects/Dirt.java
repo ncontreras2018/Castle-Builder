@@ -1,13 +1,11 @@
 package objects;
 
-import interfaces.Drawable;
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 
 import abstractClasses.LockedToGrid;
-import abstractClasses.Task;
 import abstractClasses.UnlockedFromGrid;
+import tasks.Task;
 
 public class Dirt extends LockedToGrid {
 

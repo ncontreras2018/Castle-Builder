@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import abstractClasses.LockedToGrid;
-import abstractClasses.Task;
+import tasks.Task;
 import abstractClasses.UnlockedFromGrid;
 import tasks.Mining;
 
