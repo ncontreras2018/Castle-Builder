@@ -24,6 +24,7 @@ public abstract class Task extends LockedToGrid implements Drawable {
 
 	public Task(int row, int col, Player player, double timeCost) {
 		this(row, col, player, timeCost, null);
+		System.out.println("Used Short Constructer for Task, passed");
 	}
 
 	public Task(int row, int col, Player player, double timeCost, Task prerequisiteFor) {
@@ -34,6 +35,10 @@ public abstract class Task extends LockedToGrid implements Drawable {
 		prerequisiteTasks.addAll(createPrerequisiteTasks());
 		globalTaskList.addAll(prerequisiteTasks);
 		this.prerequisiteFor = prerequisiteFor;
+		
+		System.out.println("Task Constructor Input Row: " + row + " Input Col: " + col);
+		
+		System.out.println("Created Task At Row: " + getRow() + " Col: " + getCol());
 	}
 
 	/**

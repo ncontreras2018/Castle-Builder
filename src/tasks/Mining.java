@@ -14,6 +14,9 @@ public class Mining extends Task {
 
 	public Mining(int row, int col, Player player) {
 		super(row, col, player, 5);
+		System.out.println("Passed Mining info to Task, constructed");
+		
+		System.out.println("Input Row: " + row + " Input Col: " + col);
 	}
 
 	@Override
@@ -37,6 +40,9 @@ public class Mining extends Task {
 
 	@Override
 	public void update() {
+		if (isDone()) {
+			((Miner) getAssignedPerson()).collectOre();
+		}
 	}
 
 	@Override
@@ -55,7 +61,12 @@ public class Mining extends Task {
 		Ore closestFree = getClosestFreeOre();
 
 		if (closestFree != null) {
-			Task.addTask(new Mining(closestFree.getRow(), closestFree.getApproxY(), m.getPlayer()));
+			
+			Mining newTask = new Mining(closestFree.getRow(), closestFree.getCol(), m.getPlayer());
+			
+			getMap().getGrid()[closestFree.getRow()][closestFree.getCol()][2] = newTask;
+			
+			Task.addTask(newTask);
 		}
 	}
 
@@ -87,6 +98,9 @@ public class Mining extends Task {
 				}
 			}
 		}
+		
+		System.out.println("Closest Ore: " + closest);
+		
 		return closest;
 	}
 

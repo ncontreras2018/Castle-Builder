@@ -28,9 +28,11 @@ public class Player {
 		int centerX = (gamePanel.getMap().getGrid()[0].length * gamePanel.getMap().getTileSize()) / 2;
 		int centerY = (gamePanel.getMap().getGrid().length * gamePanel.getMap().getTileSize()) / 2;
 
-		gamePanel.getMap().addUnlockedObject(new Worker(centerX - gamePanel.getMap().getTileSize(), centerY, this));
-		
-//		gamePanel.getMap().addUnlockedObject(new Miner(centerX + gamePanel.getMap().getTileSize(), centerY, this));
+		for (int i = 0; i < 1; i++) {
+			gamePanel.getMap().addUnlockedObject(new Worker(centerX - gamePanel.getMap().getTileSize(), centerY, this));
+
+			gamePanel.getMap().addUnlockedObject(new Miner(centerX + gamePanel.getMap().getTileSize(), centerY, this));
+		}
 	}
 
 	public int getNumber() {

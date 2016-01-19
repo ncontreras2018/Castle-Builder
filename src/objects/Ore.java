@@ -45,6 +45,8 @@ public class Ore extends LockedToGrid {
 		}
 
 		LockedToGrid[] curTile = getMap().getGrid()[row][col];
+		
+		System.out.println("Creating Ore At Row: " + row + " Col: " + col);
 
 		curTile[1] = new Ore(row, col);
 
@@ -89,7 +91,6 @@ public class Ore extends LockedToGrid {
 
 	@Override
 	public boolean canMoveThrough(UnlockedFromGrid obj) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 }

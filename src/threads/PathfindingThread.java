@@ -16,10 +16,6 @@ public class PathfindingThread extends Thread {
 
 	private HashMap<UnlockedFromGrid, ArrayList<int[]>> pathsFound;
 
-	private final double WALL_PENALTY_FACTOR = 1000;
-
-	private final double TASK_PENALTY_FACTOR = 1.1;
-
 	public PathfindingThread(Map map) {
 		this.map = map;
 		pathFindingRequests = new ArrayList<Object[]>();
@@ -34,7 +30,8 @@ public class PathfindingThread extends Thread {
 
 		pathFindingRequests.add(request);
 
-		System.out.println("Pathfinding request placed for: " + objectNeedingPath);
+		System.out.println("Pathfinding request placed for: " + objectNeedingPath + " going to Row: " + targRow
+				+ " Col: " + targCol + " Adjacent: " + adjacent);
 	}
 
 	public boolean hasRequestFor(UnlockedFromGrid objectNeedingPath) {
@@ -70,6 +67,9 @@ public class PathfindingThread extends Thread {
 
 				int targetRow = (int) currentRequest[1];
 				int targetCol = (int) currentRequest[2];
+
+				System.out.println("Object: " + (UnlockedFromGrid) currentRequest[0] + " will be pathed to Row: "
+						+ targetRow + " Col: " + targetCol + " isAdjacent: " + (boolean) currentRequest[3]);
 
 				double[][] mapMesh = mapMesh(targetRow, targetCol, objectRow, objectCol,
 						(UnlockedFromGrid) currentRequest[0], (boolean) currentRequest[3]);
@@ -127,6 +127,8 @@ public class PathfindingThread extends Thread {
 					bestCol = curCol;
 				}
 			}
+			
+			bestScore = pathMesh[bestRow][bestCol];
 
 			if (curRow - 1 >= 0) {
 				if (pathMesh[curRow - 1][curCol] < bestScore && pathMesh[curRow - 1][curCol] != 0) {
@@ -152,12 +154,17 @@ public class PathfindingThread extends Thread {
 					bestCol = curCol - 1;
 				}
 			}
+			
+			bestScore = pathMesh[bestRow][bestCol];
 
-			if (bestRow == curRow && bestCol == curCol) {
+			System.out.println("Adding Row: " + bestRow + " Col: " + bestCol + " Index: " + bestScore);
+
+			if (bestScore >= curCycle) {
+
+				System.out.println("Current Tile is best Tile, returning path");
+
 				return pathFound;
 			}
-
-			System.out.println("Added Row: " + bestRow + " Col: " + bestCol + " Index: " + bestScore);
 
 			bestScore = pathMesh[bestRow][bestCol];
 
@@ -189,7 +196,10 @@ public class PathfindingThread extends Thread {
 
 				if (nodeLoc[0] == objectRow && nodeLoc[1] == objectCol) {
 
-					pathMesh[targRow][targCol] = (adjacent ? 3 : 1);
+					pathMesh[targRow][targCol] = (adjacent ? Double.MAX_VALUE : pathMesh[targRow][targCol]);
+
+					System.out.println("mapping complete. targRow: " + targRow + " targCol: " + targCol + " Value: "
+							+ pathMesh[targRow][targCol]);
 
 					return pathMesh;
 				}
