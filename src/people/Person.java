@@ -69,7 +69,7 @@ abstract public class Person extends UnlockedFromGrid {
 	 * @return the result, where 0 indicates normal movement, 1 indicates an
 	 *         arrival, and -1 indicates an inability to move
 	 */
-	
+
 	public void releaseTask() {
 		currentTask = null;
 	}
@@ -127,6 +127,18 @@ abstract public class Person extends UnlockedFromGrid {
 			int[] nextTile = pathfinder.getPathFor(this).get(0);
 
 			System.out.println("Next Tile: Row: " + nextTile[0] + " Col: " + nextTile[1]);
+
+			if (!getMap().canPassThroughTile(nextTile[0], nextTile[1], this)) {
+				System.out
+						.println(this + " cannot pass through next tile: Row: " + nextTile[0] + " Col: " + nextTile[1]);
+
+				if (getMap().canPassThroughTile(getRow(), getCol(), this)) {
+					System.out.println(this + " is in a passable tile, removing old path");
+					pathfinder.removePathFor(this);
+				} else {
+					System.out.println(this + " is stuck and will be allowed to free itself");
+				}
+			}
 
 			boolean arrived = moveTowardsTile(nextTile[0], nextTile[1]);
 

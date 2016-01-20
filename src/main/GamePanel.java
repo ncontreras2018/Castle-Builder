@@ -1,6 +1,8 @@
 package main;
 
 import interfaces.Drawable;
+import menus.Menu;
+import menus.PauseButton;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -20,6 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import tasks.Construction;
+import threads.GameThread;
 import abstractClasses.LockedToGrid;
 import abstractClasses.UnlockedFromGrid;
 
@@ -33,26 +36,36 @@ public class GamePanel extends JPanel {
 	private double zoom;
 	private final double MIN_ZOOM = .3, MAX_ZOOM = 2;
 	private AffineTransform cameraTransform;
-	
+
 	private Player player;
+	
+	private Menu menu;
 
 	public GamePanel(int width, int height, Map map) {
 
 		this.map = map;
-		
-		player = new Player(Color.BLUE, 1, this);
 
 		setUpFrame(width, height);
 
 		setUpCamera();
+		
+		menu = new Menu(this);
+	}
+	
+	public void addPauseButton(GameThread gameThread) {
+		menu.addMenuItem(new PauseButton(2, gameThread));
 	}
 
 	public Map getMap() {
 		return map;
 	}
-	
+
 	public Player getPlayer() {
 		return player;
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
 	}
 
 	private void setUpCamera() {
@@ -173,8 +186,30 @@ public class GamePanel extends JPanel {
 			}
 		}
 
-		for (UnlockedFromGrid cur : map.getUnlockedObjects()) {
-			cur.draw(g2d, false);
+		for (int i = 0; i < map.getUnlockedObjects().size(); i++) {
+			map.getUnlockedObjects().get(i).draw(g2d, false);
 		}
+		
+		g2d.setTransform(defaultTransform);
+		
+		menu.display(g2d);
+	}
+
+	public boolean isPointOnMap(int x, int y) {
+		if (x > 0 && x < map.numCols() * map.getTileSize()) {
+			if (y > 0 && y < map.numRows() * map.getTileSize()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public Menu getMenu() {
+		return menu;
+	}
+
+	public void closeGame() {
+		// TODO Auto-generated method stub
+		
 	}
 }

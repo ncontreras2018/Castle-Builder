@@ -64,6 +64,12 @@ public class Construction extends Task {
 
 	@Override
 	public boolean isDone() {
+		
+		for (UnlockedFromGrid obj : getMap().getObjectsAt(getRow(), getCol())) {
+			if (!toBuild.canMoveThrough(obj)) {
+				return false;
+			}
+		}
 
 		if (!super.isDone()) {
 			return false;
@@ -90,6 +96,7 @@ public class Construction extends Task {
 	
 	@Override
 	public boolean canMoveThrough(UnlockedFromGrid obj) {
-		return toBuild.canMoveThrough(obj);
+//		return toBuild.canMoveThrough(obj);
+		return true;
 	}
 }

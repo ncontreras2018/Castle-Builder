@@ -195,8 +195,12 @@ public class PathfindingThread extends Thread {
 			for (int[] nodeLoc : lastNodes) {
 
 				if (nodeLoc[0] == objectRow && nodeLoc[1] == objectCol) {
-
-					pathMesh[targRow][targCol] = (adjacent ? Double.MAX_VALUE : pathMesh[targRow][targCol]);
+					
+					if (cycle == 2) {
+						pathMesh[targRow][targCol] = Double.MAX_VALUE;
+						
+						mapNearbyTiles(targRow, targCol, 1, pathMesh, obj);
+					}
 
 					System.out.println("mapping complete. targRow: " + targRow + " targCol: " + targCol + " Value: "
 							+ pathMesh[targRow][targCol]);

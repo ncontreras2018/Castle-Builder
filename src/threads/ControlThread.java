@@ -43,6 +43,8 @@ public class ControlThread extends Thread {
 			long startTime = System.nanoTime();
 
 			checkCameraControls();
+			
+			gamePanel.getPlayer().update();
 
 			delayThread(System.nanoTime() - startTime);
 		}

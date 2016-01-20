@@ -1,7 +1,12 @@
 package main;
 
 import java.awt.Dimension;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import objects.Dirt;
 import objects.Nexus;
@@ -21,6 +26,8 @@ public class Map {
 
 	private ArrayList<UnlockedFromGrid> unlockedObjects;
 
+	private Nexus nexus;
+
 	public Map(int rows, int cols, int tileSize) {
 
 		Existent.setMap(this);
@@ -29,14 +36,15 @@ public class Map {
 
 		grid = new LockedToGrid[rows][cols][3];
 
-		grid[grid.length / 2][grid[grid.length / 2].length / 2][1] = new Nexus(grid.length / 2,
-				grid[grid.length / 2].length / 2);
-
 		unlockedObjects = new ArrayList<UnlockedFromGrid>();
 
 		fillWithDirt();
 
 		Ore.distributeOre(.0025, 5);
+
+		nexus = new Nexus(grid.length / 2, grid[grid.length / 2].length / 2);
+
+		grid[grid.length / 2][grid[grid.length / 2].length / 2][1] = nexus;
 	}
 
 	public void addUnlockedObject(UnlockedFromGrid object) {
@@ -74,7 +82,7 @@ public class Map {
 	public boolean canPassThroughTile(int row, int col, UnlockedFromGrid obj) {
 
 		for (LockedToGrid cur : grid[row][col]) {
-			
+
 			System.out.println("Checking: " + cur);
 
 			if (cur != null && !cur.canMoveThrough(obj)) {
@@ -137,12 +145,55 @@ public class Map {
 	public int[] convertXYtoRowCol(double x, double y) {
 		int row = (int) y / tileSize;
 		int col = (int) x / tileSize;
-		
+
 		if (row < grid.length && row > 0) {
 			if (col < grid[row].length && col > 0) {
 				return new int[] { row, col };
 			}
 		}
 		return null;
+	}
+
+	public Nexus getNexus() {
+		return nexus;
+	}
+
+	public void saveGame() {
+
+		JFileChooser fileChooser = new JFileChooser();
+
+		File saveFile = fileChooser.getCurrentDirectory();
+
+		System.out.println("Selected File: " + saveFile);
+
+		String path = null;
+		try {
+			path = saveFile.getCanonicalPath();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Saving");
+
+		String[] buttonNames = new String[] { "Save Game", "Change Save Folder" };
+
+		int userInput = JOptionPane.showOptionDialog(null, "The Game Will Be Saved In:\n" + path, "Save Game",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttonNames, null);
+		
+		if (userInput == JOptionPane.NO_OPTION) {
+			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+			fileChooser.setDialogTitle("Save Game");
+
+			fileChooser.showSaveDialog(null);
+			
+			saveFile = fileChooser.getSelectedFile();
+			
+			try {
+				System.out.println("New Save File: " + saveFile.getCanonicalPath());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

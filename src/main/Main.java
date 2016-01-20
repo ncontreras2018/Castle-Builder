@@ -5,6 +5,7 @@ import people.Worker;
 import listeners.KeyListener;
 import listeners.MouseListener;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -19,14 +20,14 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		System.setOut(new PrintStream(new OutputStream() {
-			
-			@Override
-			public void write(int b) throws IOException {
-				// TODO Auto-generated method stub
-				
-			}
-		}));
+//		System.setOut(new PrintStream(new OutputStream() {
+//			
+//			@Override
+//			public void write(int b) throws IOException {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		}));
 		
 		int mapRows = 121, mapCols = 81;
 		
@@ -50,6 +51,10 @@ public class Main {
 		
 		panel.addMouseWheelListener(ml);
 		
+		Player player = new Player(Color.BLUE, 1, panel, kl, ml);
+		
+		panel.setPlayer(player);
+		
 		GameThread gameThread = new GameThread(60, panel);
 		
 		GraphicsThread graphicsThread = new GraphicsThread(60, panel);
@@ -57,6 +62,8 @@ public class Main {
 		ControlThread controlThread = new ControlThread(30, panel, kl, ml);
 		
 		PathfindingThread pathfindingThread = new PathfindingThread(map);
+		
+		panel.addPauseButton(gameThread);
 		
 		Person.setPathfinder(pathfindingThread);
 		

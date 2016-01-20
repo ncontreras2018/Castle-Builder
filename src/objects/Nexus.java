@@ -44,5 +44,9 @@ public class Nexus extends LockedToGrid {
 	public boolean taskCanBePreformed(Task attemptedTask) {
 		return false;
 	}
+	
+	public int getHealth() {
+		return health;
+	}
 
 }

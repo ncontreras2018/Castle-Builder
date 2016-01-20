@@ -9,8 +9,11 @@ public class GameThread extends Thread {
 	private boolean draw;
 
 	private GamePanel gamePanel;
+	
+	private boolean paused;
 
 	private final int NANOS_PER_MILLI = 1000000;
+	
 
 	public GameThread(int refreshRate, GamePanel gamePanel) {
 
@@ -30,8 +33,11 @@ public class GameThread extends Thread {
 
 			long startTime = System.nanoTime();
 
-			if (draw) {
-				gamePanel.update();
+			if (!paused) {
+
+				if (draw) {
+					gamePanel.update();
+				}
 			}
 
 			delayThread(System.nanoTime() - startTime);
@@ -41,16 +47,23 @@ public class GameThread extends Thread {
 	private void delayThread(long timeTaken) {
 
 		long timeLeftToWait = nanoDelay - timeTaken;
-		
+
 		if (timeLeftToWait <= 0) {
 			return;
 		}
 
 		try {
-			Thread.sleep(timeLeftToWait / NANOS_PER_MILLI,
-					(int) (timeLeftToWait % NANOS_PER_MILLI));
+			Thread.sleep(timeLeftToWait / NANOS_PER_MILLI, (int) (timeLeftToWait % NANOS_PER_MILLI));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void setPaused(boolean isPaused) {
+		this.paused = isPaused;
+	}
+	
+	public void togglePaused() {
+		paused = !paused;
 	}
 }

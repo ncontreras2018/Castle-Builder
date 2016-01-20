@@ -1,9 +1,12 @@
 package listeners;
 
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 
 import abstractClasses.LockedToGrid;
 import objects.Wall;
@@ -21,6 +24,8 @@ public class MouseListener implements java.awt.event.MouseListener, MouseMotionL
 
 	private Player humanPlayer;
 
+	private int mouseX, mouseY;
+
 	public MouseListener(GamePanel gp, Player humanPlayer) {
 		gamePanel = gp;
 		this.humanPlayer = humanPlayer;
@@ -29,45 +34,12 @@ public class MouseListener implements java.awt.event.MouseListener, MouseMotionL
 	@Override
 	public void mouseClicked(MouseEvent e) {
 
-		System.out.println("Button Pressed: " + e.getButton());
+		if (e.getY() <= gamePanel.getMenu().getMenuSize().height) {
+			gamePanel.getMenu().mouseClicked(e);
 
-		int[] adjustedPos = gamePanel.adjustPointForCamera(e.getX(), e.getY());
-
-		int[] rowCol = gamePanel.getMap().convertXYtoRowCol(adjustedPos[0], adjustedPos[1]);
-
-		if (rowCol != null) {
-
-			if (e.getButton() == MouseEvent.BUTTON1) {
-
-				Task newTask = new Construction(rowCol[0], rowCol[1], gamePanel.getPlayer(),
-						new Wall(rowCol[0], rowCol[1]), true);
-
-				gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][2] = newTask;
-
-				Task.addTask(newTask);
-			} else if (e.getButton() == MouseEvent.BUTTON3) {
-
-				LockedToGrid[] tileClicked = gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]];
-
-				if (tileClicked[2] != null) {
-					((Task) tileClicked[2]).remove();
-				}
-
-				System.out.println("Create Demo? Object at = " + tileClicked[1]);
-
-				if (tileClicked[1] != null) {
-
-					System.out.println("Creating Demo Task");
-
-					Task newTask = new Demolition(rowCol[0], rowCol[1], gamePanel.getPlayer(), null);
-
-					tileClicked[2] = newTask;
-
-					Task.addTask(newTask);
-				}
-			}
 		} else {
-			System.out.println("Click was off map");
+			gamePanel.getPlayer().mouseClicked(e);
+
 		}
 	}
 
@@ -93,10 +65,24 @@ public class MouseListener implements java.awt.event.MouseListener, MouseMotionL
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		mouseX = e.getX();
+		mouseY = e.getY();
 	}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		gamePanel.zoomCamera(e.getPreciseWheelRotation() * ZOOM_SPEED);
+	}
+
+	public int getMouseX() {
+		return mouseX;
+	}
+
+	public int getMouseY() {
+		return mouseY;
+	}
+
+	public int[] getAdjustedLocation() {
+		return gamePanel.adjustPointForCamera(mouseX, mouseY);
 	}
 }

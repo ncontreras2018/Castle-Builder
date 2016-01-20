@@ -22,12 +22,9 @@ public class Worker extends Person {
 
 	@Override
 	protected void doesntDoTasks() {
-//		ArrayList<int[]> wanderTarget = getPathfinder().getPathFor(this);
-//
-//		if (wanderTarget == null) {
-//			if (!getPathfinder().hasRequestFor(this)) {
-//				getPathfinder().requestPath(this, 5, 5, false);
-//			}
-//		}
+
+		if (!getNexus().isNearby(this)) {
+			autoMoveTo(getNexus().getRow(), getNexus().getCol(), true);
+		}
 	}
 }

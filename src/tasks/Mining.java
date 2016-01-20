@@ -11,6 +11,8 @@ import people.Miner;
 import people.Person;
 
 public class Mining extends Task {
+	
+	private static ArrayList<Mining> jobsInProgress = new ArrayList<Mining>();
 
 	public Mining(int row, int col, Player player) {
 		super(row, col, player, 5);
@@ -67,6 +69,8 @@ public class Mining extends Task {
 			getMap().getGrid()[closestFree.getRow()][closestFree.getCol()][2] = newTask;
 			
 			Task.addTask(newTask);
+			
+			jobsInProgress.add(newTask);
 		}
 	}
 
@@ -83,7 +87,7 @@ public class Mining extends Task {
 
 						boolean alreadyTaken = false;
 
-						for (Task t : Task.getTaskList()) {
+						for (Mining t : jobsInProgress) {
 							if (t.getRow() == curTile[1].getRow() && t.getCol() == curTile[1].getCol()) {
 								alreadyTaken = true;
 								break;
@@ -107,5 +111,12 @@ public class Mining extends Task {
 	@Override
 	public boolean canMoveThrough(UnlockedFromGrid obj) {
 		return true;
+	}
+	
+	@Override
+	public void finish() {
+		super.finish();
+		
+		jobsInProgress.remove(this);
 	}
 }
