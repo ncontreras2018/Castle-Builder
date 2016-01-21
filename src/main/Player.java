@@ -3,6 +3,7 @@ package main;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 
 import abstractClasses.Existent;
 import abstractClasses.LockedToGrid;
@@ -15,7 +16,7 @@ import tasks.Construction;
 import tasks.Demolition;
 import tasks.Task;
 
-public class Player {
+public class Player implements Serializable {
 
 	private Color playersColor;
 

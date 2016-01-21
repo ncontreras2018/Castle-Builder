@@ -392,7 +392,7 @@ public class GamePanel extends JPanel implements Serializable {
 		if (fileChooserResult == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
 
-			GameIO.load(selectedFile);
+			GameIO.load(this, selectedFile);
 
 		} else {
 			return false;

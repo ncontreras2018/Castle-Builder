@@ -1,12 +1,13 @@
 package threads;
 
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 
 import listeners.KeyListener;
 import listeners.MouseListener;
 import main.GamePanel;
 
-public class ControlThread extends Thread {
+public class ControlThread extends Thread implements Serializable {
 
 	private long nanoDelay;
 

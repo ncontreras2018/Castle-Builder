@@ -1,8 +1,10 @@
 package threads;
 
+import java.io.Serializable;
+
 import main.GamePanel;
 
-public class GraphicsThread extends Thread {
+public class GraphicsThread extends Thread implements Serializable {
 
 	private long nanoDelay;
 

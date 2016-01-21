@@ -3,10 +3,11 @@ package menus;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.io.Serializable;
 
 import main.GamePanel;
 
-abstract public class MenuItem {
+abstract public class MenuItem implements Serializable {
 	
 	private static Menu menu;
 	

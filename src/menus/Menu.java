@@ -7,12 +7,13 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import main.GamePanel;
 import main.Player;
 
-public class Menu {
+public class Menu implements Serializable {
 
 	private GamePanel gamePanel;
 

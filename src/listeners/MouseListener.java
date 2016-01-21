@@ -7,6 +7,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
+import java.io.Serializable;
 
 import abstractClasses.LockedToGrid;
 import objects.Wall;
@@ -16,7 +17,8 @@ import tasks.Task;
 import main.GamePanel;
 import main.Player;
 
-public class MouseListener implements java.awt.event.MouseListener, MouseMotionListener, MouseWheelListener {
+public class MouseListener
+		implements java.awt.event.MouseListener, MouseMotionListener, MouseWheelListener, Serializable {
 
 	private GamePanel gamePanel;
 

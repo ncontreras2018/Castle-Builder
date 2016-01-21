@@ -2,12 +2,13 @@ package listeners;
 
 import java.awt.RenderingHints.Key;
 import java.awt.event.KeyEvent;
+import java.io.Serializable;
 import java.util.HashMap;
 
 import main.GamePanel;
 import main.Map;
 
-public class KeyListener implements java.awt.event.KeyListener {
+public class KeyListener implements java.awt.event.KeyListener, Serializable {
 	
 	private boolean[] keysPressed;
 

@@ -1,5 +1,6 @@
 package threads;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,7 +10,7 @@ import abstractClasses.LockedToGrid;
 import abstractClasses.UnlockedFromGrid;
 import main.Map;
 
-public class PathfindingThread extends Thread {
+public class PathfindingThread extends Thread implements Serializable {
 	private Map map;
 
 	private ArrayList<Object[]> pathFindingRequests;

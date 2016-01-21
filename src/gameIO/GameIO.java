@@ -58,23 +58,44 @@ public class GameIO {
 	}
 
 	public static void load(GamePanel oldPanel, File toLoad) {
+		
+		System.out.println("Load 1");
 
 		Object obj = null;
 
 		try {
 			
+			System.out.println("Load 2");
+			
 			FileInputStream f_in = new FileInputStream(toLoad.getCanonicalPath());
 			ObjectInputStream obj_in = new ObjectInputStream(f_in);
+			
+			System.out.println("Load 3");
 
 			obj = obj_in.readObject();
 
 			obj_in.close();
+			
+			System.out.println("Load 4");
 		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println("Load 5");
 
 		if (obj instanceof GamePanel) {
+			
+			System.out.println("Load 6");
+			
 			GamePanel newPanel = (GamePanel) obj;
+			
+			System.out.println("Loaded New Panel: " + newPanel);
+			
+			System.out.println("Old Panel: " + oldPanel);
+			
+			newPanel.setVisible(true);
+			
+			System.out.println("Load 7");
 			
 			oldPanel.getFrame().dispose();
 		}

@@ -3,6 +3,7 @@ package main;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
@@ -23,7 +24,7 @@ import abstractClasses.LockedToGrid;
 import abstractClasses.UnlockedFromGrid;
 import gameIO.GameIO;
 
-public class Map {
+public class Map implements Serializable {
 
 	private int tileSize;
 
