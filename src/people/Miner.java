@@ -12,7 +12,7 @@ public class Miner extends Person {
 
 	private boolean hasOre;
 
-	public Miner(int xPos, int yPos, Player player) throws IllegalLocationException {
+	public Miner(int xPos, int yPos, Player player) {
 		super(xPos, yPos, 1, player);
 		
 		Mining.createTask(this);

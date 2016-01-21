@@ -33,7 +33,7 @@ public class ControlThread extends Thread {
 	}
 
 	public void setRefreshRate(int frameRate) {
-		nanoDelay = 1000000000 / frameRate;
+		nanoDelay = (1000 * NANOS_PER_MILLI) / frameRate;
 	}
 
 	@Override

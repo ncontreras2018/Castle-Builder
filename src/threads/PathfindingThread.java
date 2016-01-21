@@ -20,6 +20,8 @@ public class PathfindingThread extends Thread {
 		this.map = map;
 		pathFindingRequests = new ArrayList<Object[]>();
 		pathsFound = new HashMap<UnlockedFromGrid, ArrayList<int[]>>();
+		
+		this.setPriority(Thread.MIN_PRIORITY);
 	}
 
 	public void requestPath(UnlockedFromGrid objectNeedingPath, int targRow, int targCol, boolean adjacent) {
@@ -55,8 +57,6 @@ public class PathfindingThread extends Thread {
 	public void run() {
 		while (true) {
 
-			System.out.println("Pathfinder tick");
-
 			if (pathFindingRequests.size() > 0) {
 				Object[] currentRequest = pathFindingRequests.get(0);
 
@@ -90,12 +90,16 @@ public class PathfindingThread extends Thread {
 
 				pathFindingRequests.remove(0);
 			}
-
+			
+			//Encourage other threads to do some work before handling another request
+			Thread.yield();
+			
 			try {
 				Thread.sleep(5);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			
 		}
 	}
 

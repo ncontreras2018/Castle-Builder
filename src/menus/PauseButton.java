@@ -45,25 +45,47 @@ public class PauseButton extends MenuItem {
 	public void mouseClicked() {
 		gameThread.setPaused(true);
 
-		String[] menuChoices = new String[] { "Resume Game", "Save Game", "Exit Game" };
+		String[] menuChoices = new String[] { "Resume Game", "Save Game", "Load Game", "Exit Game" };
 
-		int userInput = JOptionPane.showOptionDialog(null, "Game Paused", "Main Menu", JOptionPane.YES_NO_CANCEL_OPTION,
-				JOptionPane.DEFAULT_OPTION, null, menuChoices, menuChoices[0]);
+		boolean exitLoop = false;
 
-		switch (userInput) {
+		while (!exitLoop) {
 
-		case JOptionPane.NO_OPTION:
-			getGamePanel().getMap().saveGame();
-			break;
+			int userInput = JOptionPane.showOptionDialog(null, "Game Paused", "Main Menu", JOptionPane.PLAIN_MESSAGE,
+					JOptionPane.DEFAULT_OPTION, null, menuChoices, menuChoices[0]);
 
-		case JOptionPane.CANCEL_OPTION:
-			getGamePanel().closeGame();
-			break;
+			switch (userInput) {
 
-		default:
-			gameThread.setPaused(false);
-			break;
+			case 1:
+
+				boolean saveResult = getGamePanel().saveGame();
+
+				if (saveResult) {
+					exitLoop = true;
+				}
+
+				break;
+				
+			case 2:
+				
+				boolean loadResult = getGamePanel().loadGame();
+				
+				if (loadResult) {
+					exitLoop = true;
+				}
+				
+				break;
+
+			case 3:
+				getGamePanel().closeGame();
+				exitLoop = true;
+				break;
+
+			default:
+				gameThread.setPaused(false);
+				exitLoop = true;
+				break;
+			}
 		}
-
 	}
 }

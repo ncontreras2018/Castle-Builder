@@ -6,25 +6,23 @@ public class GameThread extends Thread {
 
 	private long nanoDelay;
 
-	private boolean draw;
-
 	private GamePanel gamePanel;
-	
+
 	private boolean paused;
 
 	private final int NANOS_PER_MILLI = 1000000;
-	
 
 	public GameThread(int refreshRate, GamePanel gamePanel) {
 
 		setRefreshRate(refreshRate);
 
 		this.gamePanel = gamePanel;
-		draw = true;
+
+		this.setPriority(Thread.MAX_PRIORITY);
 	}
 
 	public void setRefreshRate(int frameRate) {
-		nanoDelay = 1000000000 / frameRate;
+		nanoDelay = (1000 * NANOS_PER_MILLI) / frameRate;
 	}
 
 	@Override
@@ -35,9 +33,7 @@ public class GameThread extends Thread {
 
 			if (!paused) {
 
-				if (draw) {
-					gamePanel.update();
-				}
+				gamePanel.update();
 			}
 
 			delayThread(System.nanoTime() - startTime);
@@ -58,11 +54,11 @@ public class GameThread extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void setPaused(boolean isPaused) {
 		this.paused = isPaused;
 	}
-	
+
 	public void togglePaused() {
 		paused = !paused;
 	}

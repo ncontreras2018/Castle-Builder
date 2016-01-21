@@ -20,7 +20,7 @@ abstract public class Person extends UnlockedFromGrid {
 
 	private Task currentTask;
 
-	public Person(int xPos, int yPos, double speed, Player player) throws IllegalLocationException {
+	public Person(int xPos, int yPos, double speed, Player player) {
 		super(xPos, yPos, speed, 20);
 		this.player = player;
 

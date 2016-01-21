@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import objects.Dirt;
 import objects.Nexus;
@@ -17,6 +21,7 @@ import tasks.Task;
 import abstractClasses.Existent;
 import abstractClasses.LockedToGrid;
 import abstractClasses.UnlockedFromGrid;
+import gameIO.GameIO;
 
 public class Map {
 
@@ -156,44 +161,5 @@ public class Map {
 
 	public Nexus getNexus() {
 		return nexus;
-	}
-
-	public void saveGame() {
-
-		JFileChooser fileChooser = new JFileChooser();
-
-		File saveFile = fileChooser.getCurrentDirectory();
-
-		System.out.println("Selected File: " + saveFile);
-
-		String path = null;
-		try {
-			path = saveFile.getCanonicalPath();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		System.out.println("Saving");
-
-		String[] buttonNames = new String[] { "Save Game", "Change Save Folder" };
-
-		int userInput = JOptionPane.showOptionDialog(null, "The Game Will Be Saved In:\n" + path, "Save Game",
-				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttonNames, null);
-		
-		if (userInput == JOptionPane.NO_OPTION) {
-			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-			fileChooser.setDialogTitle("Save Game");
-
-			fileChooser.showSaveDialog(null);
-			
-			saveFile = fileChooser.getSelectedFile();
-			
-			try {
-				System.out.println("New Save File: " + saveFile.getCanonicalPath());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 }

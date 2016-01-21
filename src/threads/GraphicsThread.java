@@ -21,7 +21,7 @@ public class GraphicsThread extends Thread {
 	}
 
 	public void setFrameRate(int frameRate) {
-		nanoDelay = 1000000000 / frameRate;
+		nanoDelay = (1000 * NANOS_PER_MILLI) / frameRate;
 	}
 
 	@Override
@@ -41,14 +41,13 @@ public class GraphicsThread extends Thread {
 	private void delayThread(long timeTaken) {
 
 		long timeLeftToWait = nanoDelay - timeTaken;
-		
+
 		if (timeLeftToWait <= 0) {
 			return;
 		}
 
 		try {
-			Thread.sleep(timeLeftToWait / NANOS_PER_MILLI,
-					(int) (timeLeftToWait % NANOS_PER_MILLI));
+			Thread.sleep(timeLeftToWait / NANOS_PER_MILLI, (int) (timeLeftToWait % NANOS_PER_MILLI));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

@@ -1,10 +1,12 @@
 package abstractClasses;
 
+import java.io.Serializable;
+
 import interfaces.Drawable;
 import main.Map;
 import objects.Nexus;
 
-abstract public class Existent {
+abstract public class Existent implements Serializable {
 
 	private static Map MAP;
 
@@ -65,6 +67,10 @@ abstract public class Existent {
 		double distSqrd = (xDist * xDist) + (yDist * yDist);
 
 		return Math.sqrt(distSqrd);
+	}
+	
+	public String getDisplayName() {
+		return this.getClass().getSimpleName();
 	}
 
 	@Override

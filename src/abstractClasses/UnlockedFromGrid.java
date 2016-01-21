@@ -15,7 +15,7 @@ abstract public class UnlockedFromGrid extends Existent implements Drawable {
 
 	private final boolean ALLOW_ESCAPEMENT = true;
 
-	public UnlockedFromGrid(int xPos, int yPos, double speed, int size) throws IllegalLocationException {
+	public UnlockedFromGrid(int xPos, int yPos, double speed, int size) {
 
 		setLocation(xPos, yPos);
 

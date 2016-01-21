@@ -9,7 +9,7 @@ import throwables.IllegalLocationException;
 
 public class Worker extends Person {
 
-	public Worker(int xPos, int yPos, Player player) throws IllegalLocationException {
+	public Worker(int xPos, int yPos, Player player) {
 		super(xPos, yPos, 1, player);
 	}
 
