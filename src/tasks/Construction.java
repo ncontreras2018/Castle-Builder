@@ -1,6 +1,7 @@
 package tasks;
 
 import interfaces.Drawable;
+import interfaces.Valuable;
 import main.Player;
 
 import java.awt.Graphics2D;
@@ -15,18 +16,14 @@ public class Construction extends Task {
 
 	private LockedToGrid toBuild;
 
-	private boolean isPlaced;
+	private boolean hasOre;
 
-	public Construction(int row, int col, Player player, LockedToGrid toBuild, boolean isPlaced) {
+	public Construction(int row, int col, Player player, LockedToGrid toBuild) {
 		super(row, col, player, 5);
 
 		this.toBuild = toBuild;
 
-		this.isPlaced = isPlaced;
-	}
-
-	public void place() {
-		isPlaced = true;
+		this.hasOre = false;
 	}
 
 	@Override
@@ -38,7 +35,7 @@ public class Construction extends Task {
 
 	@Override
 	public int getPriorty() {
-		return isPlaced ? 3 : 0;
+		return hasOre ? 3 : 0;
 	}
 
 	@Override
@@ -54,19 +51,38 @@ public class Construction extends Task {
 
 	@Override
 	public void update() {
+		if (!hasOre) {
+			if (toBuild instanceof Valuable) {
+				hasOre = getPlayer().reserveOre(((Valuable) toBuild).getOreValue());
+			} else {
+				hasOre = true;
+			}
+		}
+
 		if (isDone()) {
 
 			getMap().getGrid()[getRow()][getCol()][1] = toBuild;
 			getMap().getGrid()[getRow()][getCol()][2] = null;
+
+			if (toBuild instanceof Valuable) {
+				getPlayer().unReserveOre(((Valuable) toBuild).getOreValue());
+				getPlayer().removeOre(((Valuable) toBuild).getOreValue());
+			}
 			System.out.println("Finished Construction: " + toBuild);
 		}
 	}
 
 	@Override
 	public boolean isDone() {
-		
+
 		for (UnlockedFromGrid obj : getMap().getObjectsAt(getRow(), getCol())) {
 			if (!toBuild.canMoveThrough(obj)) {
+				return false;
+			}
+		}
+
+		if (toBuild instanceof Valuable) {
+			if (((Valuable) toBuild).getOreValue() > getPlayer().getAmountOfOre()) {
 				return false;
 			}
 		}
@@ -93,10 +109,9 @@ public class Construction extends Task {
 	public boolean shouldBeAdjacent() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean canMoveThrough(UnlockedFromGrid obj) {
-//		return toBuild.canMoveThrough(obj);
-		return true;
+		return toBuild.canMoveThrough(obj);
 	}
 }

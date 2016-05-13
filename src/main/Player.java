@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import abstractClasses.Existent;
 import abstractClasses.LockedToGrid;
+import interfaces.Valuable;
 import listeners.KeyListener;
 import listeners.MouseListener;
 import objects.Wall;
@@ -23,6 +24,7 @@ public class Player implements Serializable {
 	private int number;
 
 	private int ore;
+	private int reservedOre;
 
 	private GamePanel gamePanel;
 
@@ -63,6 +65,10 @@ public class Player implements Serializable {
 	public void addOre(int amount) {
 		ore += amount;
 	}
+	
+	public void removeOre(int amount) {
+		ore -= amount;
+	}
 
 	public int getAmountOfOre() {
 		return ore;
@@ -70,6 +76,18 @@ public class Player implements Serializable {
 
 	public void update() {
 		createNewPeople();
+	}
+
+	public boolean reserveOre(int amount) {
+		if (ore - reservedOre < amount) {
+			return false;
+		}
+		reservedOre += amount;
+		return true;
+	}
+	
+	public void unReserveOre(int amount) {
+		reservedOre -= amount;
 	}
 
 	private void createNewPeople() {
@@ -98,7 +116,7 @@ public class Player implements Serializable {
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		
+
 		System.out.println("Button Pressed: " + e.getButton());
 
 		int[] adjustedPos = gamePanel.adjustPointForCamera(e.getX(), e.getY());
@@ -114,7 +132,7 @@ public class Player implements Serializable {
 					if (e.getButton() == MouseEvent.BUTTON1) {
 
 						Task newTask = new Construction(rowCol[0], rowCol[1], gamePanel.getPlayer(),
-								new Wall(rowCol[0], rowCol[1]), true);
+								new Wall(rowCol[0], rowCol[1]));
 
 						gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][2] = newTask;
 

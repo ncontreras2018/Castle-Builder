@@ -1,6 +1,7 @@
 package objects;
 
 import interfaces.Drawable;
+import interfaces.Valuable;
 import tasks.Demolition;
 import tasks.Mining;
 
@@ -11,7 +12,7 @@ import abstractClasses.LockedToGrid;
 import tasks.Task;
 import abstractClasses.UnlockedFromGrid;
 
-public class Wall extends LockedToGrid {
+public class Wall extends LockedToGrid implements Valuable {
 
 	public Wall(int row, int col) {
 		super(row, col);
@@ -51,5 +52,15 @@ public class Wall extends LockedToGrid {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public int getOreValue() {
+		return 5;
+	}
+
+	@Override
+	public double getReturnPercentage() {
+		return 0.6;
 	}
 }

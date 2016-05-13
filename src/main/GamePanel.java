@@ -155,6 +155,8 @@ public class GamePanel extends JPanel implements Serializable {
 			inverse = cameraTransform.createInverse();
 		} catch (NoninvertibleTransformException e) {
 			e.printStackTrace();
+		} catch (NullPointerException e) {
+			return new int[] {oldX, oldY};
 		}
 
 		Point point = new Point(oldX, oldY);

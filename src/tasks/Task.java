@@ -15,7 +15,7 @@ public abstract class Task extends LockedToGrid implements Drawable {
 	private Player player;
 
 	private long timeCost, timeSpent;
-
+	
 	private Person personAssigned;
 
 	private ArrayList<Task> prerequisiteTasks;
@@ -132,8 +132,8 @@ public abstract class Task extends LockedToGrid implements Drawable {
 	public abstract int getPriorty();
 
 	/**
-	 * Gets the type of person needed to complete the task Return Person if
-	 * anyone can accomplish it
+	 * Gets the type of person needed to complete the task <br>
+	 * Return Person if anyone can accomplish it
 	 * 
 	 * @return The type of the object needed
 	 */

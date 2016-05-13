@@ -160,7 +160,9 @@ abstract public class Person extends UnlockedFromGrid {
 
 			currentTask = Task.takeNextApplicableTaskFor(this);
 
-			currentTask.assignPerson(this);
+			if (currentTask != null) {
+				currentTask.assignPerson(this);
+			}
 
 			System.out.println("Got new Task: " + currentTask);
 

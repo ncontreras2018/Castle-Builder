@@ -118,24 +118,24 @@ public class Map implements Serializable {
 		}
 	}
 
-	public void validateTemporaryItems() {
-		for (int row = 0; row < grid.length; row++) {
-			for (int col = 0; col < grid[row].length; col++) {
-				for (int layer = 0; layer < grid[row][col].length; layer++) {
-
-					LockedToGrid obj = grid[row][col][layer];
-
-					if (obj != null) {
-						if (obj instanceof Construction) {
-							if (((Construction) obj).getPriorty() == 0) {
-								((Construction) grid[row][col][layer]).place();
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+//	public void validateTemporaryItems() {
+//		for (int row = 0; row < grid.length; row++) {
+//			for (int col = 0; col < grid[row].length; col++) {
+//				for (int layer = 0; layer < grid[row][col].length; layer++) {
+//
+//					LockedToGrid obj = grid[row][col][layer];
+//
+//					if (obj != null) {
+//						if (obj instanceof Construction) {
+//							if (((Construction) obj).getPriorty() == 0) {
+//								((Construction) grid[row][col][layer]).place();
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	public ArrayList<UnlockedFromGrid> getObjectsAt(int row, int col) {
 		ArrayList<UnlockedFromGrid> objects = new ArrayList<UnlockedFromGrid>();

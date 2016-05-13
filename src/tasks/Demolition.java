@@ -5,7 +5,9 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import abstractClasses.UnlockedFromGrid;
+import interfaces.Valuable;
 import main.Player;
+import people.Person;
 
 public class Demolition extends Task {
 
@@ -37,8 +39,25 @@ public class Demolition extends Task {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
+	public Class<Person> getTypeNeeded() {
+		try {
+			return (Class<Person>) Class.forName("people.Worker");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
 	public void update() {
 		if (isDone()) {
+			
+			if (getMap().getGrid()[getRow()][getCol()][1] instanceof Valuable) {
+				getPlayer().addOre((int) (((Valuable) getMap().getGrid()[getRow()][getCol()][1]).getOreValue()
+						* ((Valuable) getMap().getGrid()[getRow()][getCol()][1]).getReturnPercentage()));
+			}
+			
 			getMap().getGrid()[getRow()][getCol()][1] = null;
 			getMap().getGrid()[getRow()][getCol()][2] = null;
 		}
