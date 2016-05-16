@@ -3,6 +3,7 @@ package abstractClasses;
 import java.awt.Point;
 
 import interfaces.Drawable;
+import main.Player;
 import throwables.IllegalLocationException;
 
 abstract public class UnlockedFromGrid extends Existent implements Drawable {
@@ -17,6 +18,15 @@ abstract public class UnlockedFromGrid extends Existent implements Drawable {
 
 	public UnlockedFromGrid(int xPos, int yPos, double speed, int size) {
 
+		setLocation(xPos, yPos);
+
+		movementSpeed = speed;
+		this.size = size;
+	}
+	
+	public UnlockedFromGrid(int xPos, int yPos, double speed, int size, Player p) {
+		super(p);
+		
 		setLocation(xPos, yPos);
 
 		movementSpeed = speed;

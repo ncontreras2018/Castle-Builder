@@ -12,8 +12,6 @@ public abstract class Task extends LockedToGrid implements Drawable {
 
 	private static ArrayList<Task> globalTaskList = new ArrayList<Task>();
 
-	private Player player;
-
 	private long timeCost, timeSpent;
 	
 	private Person personAssigned;
@@ -28,8 +26,7 @@ public abstract class Task extends LockedToGrid implements Drawable {
 	}
 
 	public Task(int row, int col, Player player, double timeCost, Task prerequisiteFor) {
-		super(row, col);
-		this.player = player;
+		super(row, col, player);
 		this.timeCost = Math.round(timeCost * 1000);
 		prerequisiteTasks = new ArrayList<Task>();
 		prerequisiteTasks.addAll(createPrerequisiteTasks());
@@ -111,7 +108,7 @@ public abstract class Task extends LockedToGrid implements Drawable {
 
 	private boolean canDoTask(Person p) {
 
-		if (this.player.equals(p.getPlayer())) {
+		if (this.getPlayer().equals(p.getPlayer())) {
 			if (this.getTypeNeeded().isInstance(p)) {
 				if (this.getPrerequisites().isEmpty()) {
 					return true;
@@ -146,10 +143,6 @@ public abstract class Task extends LockedToGrid implements Drawable {
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	public Player getPlayer() {
-		return player;
 	}
 
 	public boolean isDone() {

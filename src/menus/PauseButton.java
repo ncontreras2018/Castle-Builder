@@ -3,18 +3,21 @@ package menus;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints.Key;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JOptionPane;
 
+import main.GamePanel;
 import threads.GameThread;
 
 public class PauseButton extends MenuItem {
 
-	private GameThread gameThread;
+	private GamePanel gamePanel;
 
-	public PauseButton(int menuLocation, GameThread gameThread) {
+	public PauseButton(int menuLocation, GamePanel gamePanel) {
 		super(menuLocation);
-		this.gameThread = gameThread;
+		this.gamePanel = gamePanel;
 	}
 
 	@Override
@@ -43,7 +46,7 @@ public class PauseButton extends MenuItem {
 
 	@Override
 	public void mouseClicked() {
-		gameThread.setPaused(true);
+		gamePanel.setPaused(true);
 
 		String[] menuChoices = new String[] { "Resume Game", "Save Game", "Load Game", "Exit Game" };
 
@@ -65,15 +68,15 @@ public class PauseButton extends MenuItem {
 				}
 
 				break;
-				
+
 			case 2:
-				
+
 				boolean loadResult = getGamePanel().loadGame();
-				
+
 				if (loadResult) {
 					exitLoop = true;
 				}
-				
+
 				break;
 
 			case 3:
@@ -82,10 +85,28 @@ public class PauseButton extends MenuItem {
 				break;
 
 			default:
-				gameThread.setPaused(false);
+				gamePanel.setPaused(false);
 				exitLoop = true;
 				break;
 			}
 		}
+	}
+
+	@Override
+	public int[] getKeysToListen() {
+		return new int[] { KeyEvent.VK_ESCAPE, KeyEvent.VK_SPACE };
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		mouseClicked();
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
 	}
 }

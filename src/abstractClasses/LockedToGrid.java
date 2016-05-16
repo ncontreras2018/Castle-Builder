@@ -3,6 +3,7 @@ package abstractClasses;
 import java.util.ArrayList;
 
 import interfaces.Drawable;
+import main.Player;
 import tasks.Task;
 
 abstract public class LockedToGrid extends Existent implements Drawable {
@@ -11,6 +12,13 @@ abstract public class LockedToGrid extends Existent implements Drawable {
 
 	public LockedToGrid(int row, int col) {
 
+		this.row = row;
+		this.col = col;
+	}
+	
+	public LockedToGrid(int row, int col, Player p) {
+		super(p);
+		
 		this.row = row;
 		this.col = col;
 	}

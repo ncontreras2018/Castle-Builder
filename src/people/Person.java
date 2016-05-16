@@ -15,14 +15,12 @@ import abstractClasses.UnlockedFromGrid;
 
 abstract public class Person extends UnlockedFromGrid {
 
-	private Player player;
 	private static PathfindingThread pathfinder;
 
 	private Task currentTask;
 
 	public Person(int xPos, int yPos, double speed, Player player) {
-		super(xPos, yPos, speed, 20);
-		this.player = player;
+		super(xPos, yPos, speed, 20, player);
 
 		System.out.println("New person at X: " + getX() + " Y: " + getY());
 	}
@@ -41,10 +39,6 @@ abstract public class Person extends UnlockedFromGrid {
 		} else {
 			doesntDoTasks();
 		}
-	}
-
-	public Player getPlayer() {
-		return player;
 	}
 
 	protected PathfindingThread getPathfinder() {

@@ -57,8 +57,7 @@ public class Dirt extends LockedToGrid {
 
 	@Override
 	public String getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Dirt";
 	}
 
 }

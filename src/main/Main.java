@@ -20,14 +20,11 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		// System.setOut(new PrintStream(new OutputStream() {
-		//
-		// @Override
-		// public void write(int b) throws IOException {
-		// // TODO Auto-generated method stub
-		//
-		// }
-		// }));
+		System.setOut(new PrintStream(new OutputStream() {
+			@Override
+			public void write(int b) throws IOException {
+			}
+		}));
 
 		new GamePanel();
 	}

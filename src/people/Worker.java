@@ -12,6 +12,10 @@ public class Worker extends Person {
 	public Worker(int xPos, int yPos, Player player) {
 		super(xPos, yPos, 1, player);
 	}
+	
+	public Worker(Integer xPos, Integer yPos, Player player) {
+		this(xPos.intValue(), yPos.intValue(), player);
+	}
 
 	@Override
 	public void draw(Graphics2D g2d, boolean isTransparent) {

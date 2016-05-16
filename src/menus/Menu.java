@@ -31,6 +31,10 @@ public class Menu implements Serializable {
 		updateMenuSize();
 
 		addMenuItems();
+		
+		for (MenuItem cur : menuItems) {
+			gamePanel.getKeyListener().addSelectiveListener(cur);
+		}
 	}
 
 	private void updateMenuSize() {
@@ -45,10 +49,18 @@ public class Menu implements Serializable {
 		menuItems.add(new OreCount(0));
 
 		menuItems.add(new NexusHealthCount(1));
+		
+		menuItems.add(new ItemSelector(2));
+		
+		menuItems.add(new PauseButton(3, gamePanel));
 	}
 
 	public void display(Graphics2D g2d) {
-
+		
+		for (int i = 0; i < menuItems.size(); i++) {
+			menuItems.get(i).update();
+		}
+		
 		updateMenuSize();
 
 		g2d.setColor(Color.LIGHT_GRAY);
@@ -128,9 +140,5 @@ public class Menu implements Serializable {
 				break;
 			}
 		}
-	}
-
-	public void addMenuItem(MenuItem menuItem) {
-		menuItems.add(menuItem.getMenuLocation(), menuItem);
 	}
 }

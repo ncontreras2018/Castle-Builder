@@ -47,6 +47,8 @@ public class GamePanel extends JPanel implements Serializable {
 	private JFrame frame;
 	private Map map;
 
+	private boolean gamePaused;
+
 	private int cameraX, cameraY;
 	private double zoom;
 	private final double MIN_ZOOM = .3, MAX_ZOOM = 2;
@@ -83,14 +85,12 @@ public class GamePanel extends JPanel implements Serializable {
 		player = new Player(Color.BLUE, 1, this, keyListener, mouseListener);
 
 		setUpThreads();
-		
+
 		setUpMenu();
 	}
 
 	private void setUpMenu() {
 		menu = new Menu(this);
-
-		addPauseButton(gameThread);
 	}
 
 	private void setUpThreads() {
@@ -128,10 +128,6 @@ public class GamePanel extends JPanel implements Serializable {
 		this.addMouseWheelListener(mouseListener);
 	}
 
-	private void addPauseButton(GameThread gameThread) {
-		menu.addMenuItem(new PauseButton(2, gameThread));
-	}
-
 	public Map getMap() {
 		return map;
 	}
@@ -156,7 +152,7 @@ public class GamePanel extends JPanel implements Serializable {
 		} catch (NoninvertibleTransformException e) {
 			e.printStackTrace();
 		} catch (NullPointerException e) {
-			return new int[] {oldX, oldY};
+			return new int[] { oldX, oldY };
 		}
 
 		Point point = new Point(oldX, oldY);
@@ -401,5 +397,13 @@ public class GamePanel extends JPanel implements Serializable {
 		}
 
 		return true;
+	}
+
+	public void setPaused(boolean b) {
+		gamePaused = b;
+	}
+
+	public KeyListener getKeyListener() {
+		return keyListener;
 	}
 }

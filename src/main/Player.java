@@ -4,14 +4,17 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 
 import abstractClasses.Existent;
 import abstractClasses.LockedToGrid;
+import abstractClasses.UnlockedFromGrid;
 import interfaces.Valuable;
 import listeners.KeyListener;
 import listeners.MouseListener;
 import objects.Wall;
 import people.Miner;
+import people.Person;
 import people.Worker;
 import tasks.Construction;
 import tasks.Demolition;
@@ -27,6 +30,8 @@ public class Player implements Serializable {
 	private int reservedOre;
 
 	private GamePanel gamePanel;
+
+	private Class<?> itemToPlace;
 
 	private KeyListener keyListener;
 	private MouseListener mouseListener;
@@ -65,7 +70,7 @@ public class Player implements Serializable {
 	public void addOre(int amount) {
 		ore += amount;
 	}
-	
+
 	public void removeOre(int amount) {
 		ore -= amount;
 	}
@@ -75,7 +80,6 @@ public class Player implements Serializable {
 	}
 
 	public void update() {
-		createNewPeople();
 	}
 
 	public boolean reserveOre(int amount) {
@@ -85,34 +89,9 @@ public class Player implements Serializable {
 		reservedOre += amount;
 		return true;
 	}
-	
+
 	public void unReserveOre(int amount) {
 		reservedOre -= amount;
-	}
-
-	private void createNewPeople() {
-
-		System.out.println("KeyEvent: " + KeyEvent.VK_1);
-
-		int[] mouseLoc = mouseListener.getAdjustedLocation();
-
-		if (keyListener.keyPressed(KeyEvent.VK_1)) {
-
-			if (gamePanel.isPointOnMap(mouseLoc[0], mouseLoc[1])) {
-
-				System.out.println("Create new worker");
-
-				gamePanel.getMap().addUnlockedObject(new Worker(mouseLoc[0], mouseLoc[1], this));
-			}
-		} else if (keyListener.keyPressed(KeyEvent.VK_2)) {
-
-			if (gamePanel.isPointOnMap(mouseLoc[0], mouseLoc[1])) {
-
-				System.out.println("Create new miner");
-
-				gamePanel.getMap().addUnlockedObject(new Miner(mouseLoc[0], mouseLoc[1], this));
-			}
-		}
 	}
 
 	public void mouseClicked(MouseEvent e) {
@@ -131,12 +110,37 @@ public class Player implements Serializable {
 
 					if (e.getButton() == MouseEvent.BUTTON1) {
 
-						Task newTask = new Construction(rowCol[0], rowCol[1], gamePanel.getPlayer(),
-								new Wall(rowCol[0], rowCol[1]));
+						System.out.println("ITEM TO PLACE: " + itemToPlace);
 
-						gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][2] = newTask;
+						if (itemToPlace.getSuperclass().equals(Person.class)) {
+							Person p;
+							try {
+								p = (Person) itemToPlace.getConstructor(Integer.class, Integer.class, Player.class)
+										.newInstance(adjustedPos[0], adjustedPos[1], this);
+							} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+									| InvocationTargetException | NoSuchMethodException | SecurityException e1) {
+								e1.printStackTrace();
+								return;
+							}
+							gamePanel.getMap().addUnlockedObject(p);
+						} else {
 
-						Task.addTask(newTask);
+							Task newTask;
+							try {
+								newTask = new Construction(rowCol[0], rowCol[1], gamePanel.getPlayer(),
+										(LockedToGrid) itemToPlace
+												.getConstructor(Integer.class, Integer.class, Player.class)
+												.newInstance(rowCol[0], rowCol[1], this));
+							} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+									| InvocationTargetException | NoSuchMethodException | SecurityException e1) {
+								e1.printStackTrace();
+								return;
+							}
+
+							gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]][2] = newTask;
+
+							Task.addTask(newTask);
+						}
 					} else if (e.getButton() == MouseEvent.BUTTON3) {
 
 						LockedToGrid[] tileClicked = gamePanel.getMap().getGrid()[rowCol[0]][rowCol[1]];
@@ -163,5 +167,9 @@ public class Player implements Serializable {
 		} else {
 			System.out.println("Click was off map");
 		}
+	}
+
+	public void setItemToPlace(Class<?> item) {
+		this.itemToPlace = item;
 	}
 }

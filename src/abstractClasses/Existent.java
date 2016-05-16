@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import interfaces.Drawable;
 import main.Map;
+import main.Player;
 import objects.Nexus;
 
 abstract public class Existent implements Serializable {
@@ -13,10 +14,18 @@ abstract public class Existent implements Serializable {
 	private long timeAtLastUpdate;
 	private long millisSinceLastUpdate;
 	
+	private Player player;
+	
 	private static Nexus nexus;
 
 	public Existent() {
 		updateInternalTime();
+		player = null;
+	}
+	
+	public Existent(Player p) {
+		updateInternalTime();
+		player = p;
 	}
 
 	public static void setMap(Map map) {
@@ -36,6 +45,10 @@ abstract public class Existent implements Serializable {
 	
 	protected static Nexus getNexus() {
 		return nexus;
+	}
+	
+	public Player getPlayer() {
+		return player;
 	}
 
 	public abstract double getX();
@@ -70,7 +83,7 @@ abstract public class Existent implements Serializable {
 	}
 	
 	public String getDisplayName() {
-		return this.getClass().getSimpleName();
+		return "NAMEY NAME";
 	}
 
 	@Override

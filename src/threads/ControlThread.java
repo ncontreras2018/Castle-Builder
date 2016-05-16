@@ -3,33 +3,29 @@ package threads;
 import java.awt.event.KeyEvent;
 import java.io.Serializable;
 
+import interfaces.SelectiveKeyListener;
 import listeners.KeyListener;
 import listeners.MouseListener;
 import main.GamePanel;
 
-public class ControlThread extends Thread implements Serializable {
+public class ControlThread extends Thread implements Serializable, SelectiveKeyListener {
 
 	private long nanoDelay;
 
 	private GamePanel gamePanel;
-
-	private KeyListener keyListener;
-	private MouseListener mouseListener;
 
 	private final int CAMERA_SPEED = 15;
 	private final double ZOOM_SPEED = .01;
 
 	private final int NANOS_PER_MILLI = 1000000;
 
-	public ControlThread(int refreshRate, GamePanel gp, KeyListener kl,
-			MouseListener ml) {
+	public ControlThread(int refreshRate, GamePanel gp, KeyListener kl, MouseListener ml) {
 
 		setRefreshRate(refreshRate);
 
 		gamePanel = gp;
 
-		keyListener = kl;
-		mouseListener = ml;
+		kl.addSelectiveListener(this);
 
 	}
 
@@ -43,37 +39,9 @@ public class ControlThread extends Thread implements Serializable {
 
 			long startTime = System.nanoTime();
 
-			checkCameraControls();
-			
 			gamePanel.getPlayer().update();
 
 			delayThread(System.nanoTime() - startTime);
-		}
-	}
-
-	private void checkCameraControls() {
-		if (keyListener.keyPressed(KeyEvent.VK_W)) {
-			gamePanel.moveCamera(0, -CAMERA_SPEED);
-		}
-
-		if (keyListener.keyPressed(KeyEvent.VK_S)) {
-			gamePanel.moveCamera(0, CAMERA_SPEED);
-		}
-
-		if (keyListener.keyPressed(KeyEvent.VK_A)) {
-			gamePanel.moveCamera(-CAMERA_SPEED, 0);
-		}
-
-		if (keyListener.keyPressed(KeyEvent.VK_D)) {
-			gamePanel.moveCamera(CAMERA_SPEED, 0);
-		}
-
-		if (keyListener.keyPressed(KeyEvent.VK_EQUALS)) {
-			gamePanel.zoomCamera(ZOOM_SPEED);
-		}
-
-		if (keyListener.keyPressed(KeyEvent.VK_MINUS)) {
-			gamePanel.zoomCamera(-ZOOM_SPEED);
 		}
 	}
 
@@ -86,10 +54,50 @@ public class ControlThread extends Thread implements Serializable {
 		}
 
 		try {
-			Thread.sleep(timeLeftToWait / NANOS_PER_MILLI,
-					(int) (timeLeftToWait % NANOS_PER_MILLI));
+			Thread.sleep(timeLeftToWait / NANOS_PER_MILLI, (int) (timeLeftToWait % NANOS_PER_MILLI));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public int[] getKeysToListen() {
+		return new int[] { KeyEvent.VK_W, KeyEvent.VK_A, KeyEvent.VK_S, KeyEvent.VK_D, KeyEvent.VK_EQUALS,
+				KeyEvent.VK_MINUS };
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		if (e.getKeyCode() == KeyEvent.VK_W) {
+			gamePanel.moveCamera(0, -CAMERA_SPEED);
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_S) {
+			gamePanel.moveCamera(0, CAMERA_SPEED);
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_A) {
+			gamePanel.moveCamera(-CAMERA_SPEED, 0);
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_D) {
+			gamePanel.moveCamera(CAMERA_SPEED, 0);
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_EQUALS) {
+			gamePanel.zoomCamera(ZOOM_SPEED);
+		}
+
+		if (e.getKeyCode() == KeyEvent.VK_MINUS) {
+			gamePanel.zoomCamera(-ZOOM_SPEED);
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
 	}
 }

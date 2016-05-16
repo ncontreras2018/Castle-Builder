@@ -10,8 +10,6 @@ public class GameThread extends Thread implements Serializable {
 
 	private GamePanel gamePanel;
 
-	private boolean paused;
-
 	private final int NANOS_PER_MILLI = 1000000;
 
 	public GameThread(int refreshRate, GamePanel gamePanel) {
@@ -33,10 +31,7 @@ public class GameThread extends Thread implements Serializable {
 
 			long startTime = System.nanoTime();
 
-			if (!paused) {
-
-				gamePanel.update();
-			}
+			gamePanel.update();
 
 			delayThread(System.nanoTime() - startTime);
 		}
@@ -55,13 +50,5 @@ public class GameThread extends Thread implements Serializable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public void setPaused(boolean isPaused) {
-		this.paused = isPaused;
-	}
-
-	public void togglePaused() {
-		paused = !paused;
 	}
 }

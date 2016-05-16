@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 
 public class OreCount extends MenuItem {
 
@@ -13,7 +14,6 @@ public class OreCount extends MenuItem {
 
 	@Override
 	public void update() {
-
 	}
 
 	@Override
@@ -40,4 +40,20 @@ public class OreCount extends MenuItem {
 	public void mouseClicked() {
 	}
 
+	@Override
+	public int[] getKeysToListen() {
+		return new int[0];
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+	}
 }

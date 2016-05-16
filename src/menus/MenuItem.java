@@ -3,11 +3,13 @@ package menus;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.io.Serializable;
 
+import interfaces.SelectiveKeyListener;
 import main.GamePanel;
 
-abstract public class MenuItem implements Serializable {
+abstract public class MenuItem implements Serializable, SelectiveKeyListener {
 	
 	private static Menu menu;
 	

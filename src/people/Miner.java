@@ -17,6 +17,10 @@ public class Miner extends Person {
 		
 		Mining.createTask(this);
 	}
+	
+	public Miner(Integer xPos, Integer yPos, Player player) {
+		this(xPos.intValue(), yPos.intValue(), player);
+	}
 
 	@Override
 	public void draw(Graphics2D g2d, boolean isTransparent) {

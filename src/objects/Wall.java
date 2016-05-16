@@ -2,6 +2,7 @@ package objects;
 
 import interfaces.Drawable;
 import interfaces.Valuable;
+import main.Player;
 import tasks.Demolition;
 import tasks.Mining;
 
@@ -13,9 +14,13 @@ import tasks.Task;
 import abstractClasses.UnlockedFromGrid;
 
 public class Wall extends LockedToGrid implements Valuable {
-
-	public Wall(int row, int col) {
-		super(row, col);
+	
+	public Wall(int row, int col, Player p) {
+		super(row, col, p);
+	}
+	
+	public Wall (Integer row, Integer col, Player p) {
+		this(row.intValue(), col.intValue(), p);
 	}
 
 	@Override
