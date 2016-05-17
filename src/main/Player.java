@@ -13,6 +13,7 @@ import interfaces.Valuable;
 import listeners.KeyListener;
 import listeners.MouseListener;
 import objects.Wall;
+import people.Farmer;
 import people.Miner;
 import people.Person;
 import people.Worker;
@@ -29,6 +30,8 @@ public class Player implements Serializable {
 	private int ore;
 	private int reservedOre;
 
+	private int food;
+
 	private GamePanel gamePanel;
 
 	private Class<?> itemToPlace;
@@ -44,6 +47,8 @@ public class Player implements Serializable {
 
 		this.keyListener = keyListener;
 		this.mouseListener = mouseListener;
+		
+		food = 1000;
 
 		placeStartingPeople();
 	}
@@ -56,6 +61,8 @@ public class Player implements Serializable {
 			gamePanel.getMap().addUnlockedObject(new Worker(centerX - gamePanel.getMap().getTileSize(), centerY, this));
 
 			gamePanel.getMap().addUnlockedObject(new Miner(centerX + gamePanel.getMap().getTileSize(), centerY, this));
+
+			gamePanel.getMap().addUnlockedObject(new Farmer(centerX, centerY + gamePanel.getMap().getTileSize(), this));
 		}
 	}
 
@@ -67,12 +74,26 @@ public class Player implements Serializable {
 		return playersColor;
 	}
 
+	public void addFood(int amount) {
+		food += amount;
+	}
+
+	public void removeFood(int amount) {
+		food -= amount;
+	}
+
+	public int getAmountOfFood() {
+		return food;
+	}
+
 	public void addOre(int amount) {
 		ore += amount;
+		System.err.println("Added: " + amount + " Total: " + ore);
 	}
 
 	public void removeOre(int amount) {
 		ore -= amount;
+		System.err.println("Removed: " + amount + " Total: " + ore);
 	}
 
 	public int getAmountOfOre() {
@@ -115,6 +136,7 @@ public class Player implements Serializable {
 						if (itemToPlace.getSuperclass().equals(Person.class)) {
 							Person p;
 							try {
+
 								p = (Person) itemToPlace.getConstructor(Integer.class, Integer.class, Player.class)
 										.newInstance(adjustedPos[0], adjustedPos[1], this);
 							} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -122,7 +144,12 @@ public class Player implements Serializable {
 								e1.printStackTrace();
 								return;
 							}
-							gamePanel.getMap().addUnlockedObject(p);
+
+							if (p.getFoodCost() <= getAmountOfFood()) {
+								food -= p.getFoodCost();
+								gamePanel.getMap().addUnlockedObject(p);
+							}
+
 						} else {
 
 							Task newTask;

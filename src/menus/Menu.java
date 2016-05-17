@@ -46,7 +46,7 @@ public class Menu implements Serializable {
 		MenuItem.setMenu(this);
 		MenuItem.setGamePanel(gamePanel);
 
-		menuItems.add(new OreCount(0));
+		menuItems.add(new ResourceCount(0));
 
 		menuItems.add(new NexusHealthCount(1));
 		

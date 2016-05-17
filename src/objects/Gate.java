@@ -29,10 +29,10 @@ public class Gate extends LockedToGrid implements Valuable {
 	@Override
 	public void draw(Graphics2D g2d, boolean isTransparent) {
 
+		g2d.setColor(Color.DARK_GRAY);
+
 		if (isTransparent) {
-			g2d.setColor(Color.LIGHT_GRAY);
-		} else {
-			g2d.setColor(Color.DARK_GRAY);
+			g2d.setColor(new Color(g2d.getColor().getRed(), g2d.getColor().getGreen(), g2d.getColor().getBlue(), 200));
 		}
 
 		if (!isOpen) {
@@ -43,6 +43,10 @@ public class Gate extends LockedToGrid implements Valuable {
 
 		g2d.drawRect(getTopLeftX() + getMap().getTileSize() / 4, getTopLeftY() + getMap().getTileSize() / 4,
 				getMap().getTileSize() / 2, getMap().getTileSize() / 2);
+		
+		g2d.setColor(Color.BLACK);
+
+		g2d.drawRect(getTopLeftX(), getTopLeftY(), getMap().getTileSize(), getMap().getTileSize());
 	}
 
 	@Override

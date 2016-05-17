@@ -84,9 +84,9 @@ public class GamePanel extends JPanel implements Serializable {
 
 		player = new Player(Color.BLUE, 1, this, keyListener, mouseListener);
 
-		setUpThreads();
-
 		setUpMenu();
+
+		setUpThreads();
 	}
 
 	private void setUpMenu() {
@@ -198,11 +198,16 @@ public class GamePanel extends JPanel implements Serializable {
 	}
 
 	public void update() {
+
 		for (LockedToGrid[][] row : map.getGrid()) {
 			for (LockedToGrid cur[] : row) {
 				for (LockedToGrid layer : cur) {
 					if (layer != null) {
-						layer.update();
+						if (!gamePaused) {
+							layer.update();
+						}
+
+						layer.updateInternalTime();
 					}
 				}
 			}
@@ -210,7 +215,9 @@ public class GamePanel extends JPanel implements Serializable {
 
 		for (int i = 0; i < map.getUnlockedObjects().size(); i++) {
 			UnlockedFromGrid cur = map.getUnlockedObjects().get(i);
-			cur.update();
+			if (!gamePaused) {
+				cur.update();
+			}
 			cur.updateInternalTime();
 		}
 	}
@@ -262,7 +269,11 @@ public class GamePanel extends JPanel implements Serializable {
 
 		g2d.setTransform(defaultTransform);
 
-		menu.display(g2d);
+		try {
+			menu.display(g2d);
+		} catch (Exception e) {
+			System.err.println("Menu draw error");
+		}
 	}
 
 	public boolean isPointOnMap(int x, int y) {
@@ -279,8 +290,7 @@ public class GamePanel extends JPanel implements Serializable {
 	}
 
 	public void closeGame() {
-		// TODO Auto-generated method stub
-
+		System.exit(0);
 	}
 
 	public boolean saveGame() {

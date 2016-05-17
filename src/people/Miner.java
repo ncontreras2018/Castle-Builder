@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 
 import main.Player;
 import tasks.Mining;
+import tasks.Task;
 import throwables.IllegalLocationException;
 
 public class Miner extends Person {
@@ -14,42 +15,46 @@ public class Miner extends Person {
 
 	public Miner(int xPos, int yPos, Player player) {
 		super(xPos, yPos, 1, player);
-		
-		Mining.createTask(this);
 	}
-	
+
 	public Miner(Integer xPos, Integer yPos, Player player) {
 		this(xPos.intValue(), yPos.intValue(), player);
 	}
 
 	@Override
 	public void draw(Graphics2D g2d, boolean isTransparent) {
-		g2d.setColor(getPlayer().getColor().brighter());
+		g2d.setColor(getPlayer().getColor());
 
 		g2d.fillOval(getTopLeftX(), getTopLeftY(), getSize(), getSize());
 	}
+	
+	//TODO: Fix this
 
 	@Override
 	protected void doesntDoTasks() {
 
-		System.out.println(this + " not doing tasks");
+		if (getNexus().isNearby(this)) {
 
-		if (hasOre) {
-			
-			System.out.println("Miner has ore");
-			
-			autoMoveTo(getNexus().getRow(), getNexus().getCol(), true);
-
-			if (getNexus().isNearby(this)) {
+			if (hasOre) {
+				System.err.println("--- " + this + " ---");
 				getPlayer().addOre(ORE_HAUL);
 				hasOre = false;
-
+			}
+			
+			if (!hasTask() && !Task.hasApplicableTaskFor(this)) {
 				Mining.createTask(this);
 			}
+		} else {
+			autoMoveTo(getNexus().getRow(), getNexus().getCol(), true);
 		}
 	}
 
 	public void collectOre() {
 		hasOre = true;
+	}
+
+	@Override
+	public int getFoodCost() {
+		return 15;
 	}
 }

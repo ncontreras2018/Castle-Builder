@@ -13,7 +13,7 @@ public abstract class Task extends LockedToGrid implements Drawable {
 	private static ArrayList<Task> globalTaskList = new ArrayList<Task>();
 
 	private long timeCost, timeSpent;
-	
+
 	private Person personAssigned;
 
 	private ArrayList<Task> prerequisiteTasks;
@@ -32,16 +32,16 @@ public abstract class Task extends LockedToGrid implements Drawable {
 		prerequisiteTasks.addAll(createPrerequisiteTasks());
 		globalTaskList.addAll(prerequisiteTasks);
 		this.prerequisiteFor = prerequisiteFor;
-		
+
 		System.out.println("Task Constructor Input Row: " + row + " Input Col: " + col);
-		
+
 		System.out.println("Created Task At Row: " + getRow() + " Col: " + getCol());
 	}
 
 	/**
 	 * Creates the tasks that must be completed before work on this task can
-	 * begin The priority of these tasks should be higher than that of the
-	 * parent Task
+	 * begin <br>
+	 * The priority of these tasks should be higher than that of the parent Task
 	 * 
 	 * @return Tasks that must be completed before this one
 	 */
@@ -101,7 +101,7 @@ public abstract class Task extends LockedToGrid implements Drawable {
 
 		return mostImportant;
 	}
-	
+
 	public Person getAssignedPerson() {
 		return personAssigned;
 	}
@@ -110,8 +110,10 @@ public abstract class Task extends LockedToGrid implements Drawable {
 
 		if (this.getPlayer().equals(p.getPlayer())) {
 			if (this.getTypeNeeded().isInstance(p)) {
-				if (this.getPrerequisites().isEmpty()) {
-					return true;
+				if (this.personAssigned == null) {
+					if (this.getPrerequisites().isEmpty()) {
+						return true;
+					}
 				}
 			}
 		}
@@ -171,10 +173,9 @@ public abstract class Task extends LockedToGrid implements Drawable {
 	}
 
 	public void doWork(long timeSpent) {
-		System.out.println("Did work: " + timeSpent);
 		this.timeSpent += timeSpent;
 	}
-	
+
 	public boolean isAtLocation(UnlockedFromGrid object) {
 		// return Util.isAdjacentTo(object, this);
 
@@ -189,7 +190,7 @@ public abstract class Task extends LockedToGrid implements Drawable {
 			return getApproxX() == object.getApproxX() && getApproxY() == object.getApproxY();
 		}
 	}
-	
+
 	public static ArrayList<Task> getTaskList() {
 		return globalTaskList;
 	}
@@ -204,17 +205,29 @@ public abstract class Task extends LockedToGrid implements Drawable {
 		return toReturn;
 	}
 
-	public void finish() {
+	/**
+	 * Internal method used to gracefully keep track of tasks that still require
+	 * completion after one has completed <br>
+	 * The first call of this method is to {@link #preformFinish()}; it should
+	 * be overridden to customize finishing behavior
+	 */
+
+	public final void finish() {
+
+		preformFinish();
+
 		if (isPrerequisite()) {
 			prerequisiteFor.getPrerequisites().remove(this);
 		}
 	}
-	
+
+	abstract protected void preformFinish();
+
 	@Override
 	public double movementPenalty(UnlockedFromGrid other) {
 		return 2;
 	}
-	
+
 	@Override
 	public boolean taskCanBePreformed(Task attemptedTask) {
 		return false;

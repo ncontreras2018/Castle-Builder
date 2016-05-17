@@ -26,7 +26,10 @@ public class KeyListener implements java.awt.event.KeyListener, Serializable {
 
 			@Override
 			public void run() {
-				for (SelectiveKeyListener cur : keyListeners) {
+				for (int i = 0; i < keyListeners.size(); i++) {
+
+					SelectiveKeyListener cur = keyListeners.get(i);
+
 					for (int key1 : cur.getKeysToListen()) {
 						for (KeyEvent key2 : pressedKeys) {
 							if (key1 == key2.getKeyCode()) {
@@ -77,7 +80,7 @@ public class KeyListener implements java.awt.event.KeyListener, Serializable {
 				}
 			}
 		}
-		
+
 		for (int i = 0; i < pressedKeys.size(); i++) {
 
 			KeyEvent cur = pressedKeys.get(i);

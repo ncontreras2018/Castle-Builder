@@ -16,14 +16,14 @@ public class Construction extends Task {
 
 	private LockedToGrid toBuild;
 
-	private boolean hasOre;
+	private boolean hasResources;
 
 	public Construction(int row, int col, Player player, LockedToGrid toBuild) {
 		super(row, col, player, 5);
 
 		this.toBuild = toBuild;
 
-		this.hasOre = false;
+		this.hasResources = false;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class Construction extends Task {
 
 	@Override
 	public int getPriorty() {
-		return hasOre ? 3 : 0;
+		return hasResources ? 3 : 0;
 	}
 
 	@Override
@@ -51,24 +51,15 @@ public class Construction extends Task {
 
 	@Override
 	public void update() {
-		if (!hasOre) {
+
+		toBuild.updateInternalTime();
+
+		if (!hasResources) {
 			if (toBuild instanceof Valuable) {
-				hasOre = getPlayer().reserveOre(((Valuable) toBuild).getOreValue());
+				hasResources = getPlayer().reserveOre(((Valuable) toBuild).getOreValue());
 			} else {
-				hasOre = true;
+				hasResources = true;
 			}
-		}
-
-		if (isDone()) {
-
-			getMap().getGrid()[getRow()][getCol()][1] = toBuild;
-			getMap().getGrid()[getRow()][getCol()][2] = null;
-
-			if (toBuild instanceof Valuable) {
-				getPlayer().unReserveOre(((Valuable) toBuild).getOreValue());
-				getPlayer().removeOre(((Valuable) toBuild).getOreValue());
-			}
-			System.out.println("Finished Construction: " + toBuild);
 		}
 	}
 
@@ -113,5 +104,18 @@ public class Construction extends Task {
 	@Override
 	public boolean canMoveThrough(UnlockedFromGrid obj) {
 		return toBuild.canMoveThrough(obj);
+	}
+
+	@Override
+	protected void preformFinish() {
+
+		getMap().getGrid()[getRow()][getCol()][1] = toBuild;
+		getMap().getGrid()[getRow()][getCol()][2] = null;
+
+		if (toBuild instanceof Valuable) {
+			getPlayer().unReserveOre(((Valuable) toBuild).getOreValue());
+			getPlayer().removeOre(((Valuable) toBuild).getOreValue());
+		}
+		System.out.println("Finished Construction: " + toBuild);
 	}
 }

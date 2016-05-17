@@ -39,4 +39,8 @@ public class Transportation extends Task {
 	public boolean canMoveThrough(UnlockedFromGrid obj) {
 		return true;
 	}
+
+	@Override
+	protected void preformFinish() {
+	}
 }

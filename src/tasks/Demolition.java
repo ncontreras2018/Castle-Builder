@@ -51,16 +51,6 @@ public class Demolition extends Task {
 
 	@Override
 	public void update() {
-		if (isDone()) {
-			
-			if (getMap().getGrid()[getRow()][getCol()][1] instanceof Valuable) {
-				getPlayer().addOre((int) (((Valuable) getMap().getGrid()[getRow()][getCol()][1]).getOreValue()
-						* ((Valuable) getMap().getGrid()[getRow()][getCol()][1]).getReturnPercentage()));
-			}
-			
-			getMap().getGrid()[getRow()][getCol()][1] = null;
-			getMap().getGrid()[getRow()][getCol()][2] = null;
-		}
 	}
 
 	@Override
@@ -71,5 +61,16 @@ public class Demolition extends Task {
 	@Override
 	public boolean canMoveThrough(UnlockedFromGrid obj) {
 		return true;
+	}
+
+	@Override
+	protected void preformFinish() {
+		if (getMap().getGrid()[getRow()][getCol()][1] instanceof Valuable) {
+			getPlayer().addOre((int) (((Valuable) getMap().getGrid()[getRow()][getCol()][1]).getOreValue()
+					* ((Valuable) getMap().getGrid()[getRow()][getCol()][1]).getReturnPercentage()));
+		}
+		
+		getMap().getGrid()[getRow()][getCol()][1] = null;
+		getMap().getGrid()[getRow()][getCol()][2] = null;
 	}
 }

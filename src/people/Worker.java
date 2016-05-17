@@ -31,4 +31,9 @@ public class Worker extends Person {
 			autoMoveTo(getNexus().getRow(), getNexus().getCol(), true);
 		}
 	}
+
+	@Override
+	public int getFoodCost() {
+		return 15;
+	}
 }

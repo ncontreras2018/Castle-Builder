@@ -6,9 +6,12 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
+import objects.Farmland;
 import objects.Gate;
 import objects.Wall;
+import people.Farmer;
 import people.Miner;
+import people.Swordsman;
 import people.Worker;
 
 public class ItemSelector extends MenuItem {
@@ -19,7 +22,8 @@ public class ItemSelector extends MenuItem {
 
 	ItemSelector(int menuLocation) {
 		super(menuLocation);
-		placeableItems = new Class<?>[] { Wall.class, Gate.class, Worker.class, Miner.class };
+		placeableItems = new Class<?>[] { Wall.class, Gate.class, Farmland.class, Worker.class, Miner.class,
+				Farmer.class, Swordsman.class };
 		selectedItem = 0;
 	}
 

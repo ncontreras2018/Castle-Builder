@@ -56,17 +56,21 @@ abstract public class Person extends UnlockedFromGrid {
 		System.out.println("Has Task: " + (currentTask != null) + " or " + Task.hasApplicableTaskFor(this));
 		return currentTask != null || Task.hasApplicableTaskFor(this);
 	}
+	
+	public boolean hasTask() {
+		return currentTask != null;
+	}
 
+	public void releaseTask() {
+		currentTask = null;
+	}
+	
 	/**
 	 * Moves the Person towards the row/col tile at the speed set by getSpeed()
 	 * 
 	 * @return the result, where 0 indicates normal movement, 1 indicates an
 	 *         arrival, and -1 indicates an inability to move
 	 */
-
-	public void releaseTask() {
-		currentTask = null;
-	}
 
 	private boolean moveTowardsTile(int row, int col) {
 
@@ -150,29 +154,20 @@ abstract public class Person extends UnlockedFromGrid {
 
 		if (currentTask == null) {
 
-			System.out.println("Current Task is null");
-
 			currentTask = Task.takeNextApplicableTaskFor(this);
 
 			if (currentTask != null) {
 				currentTask.assignPerson(this);
 			}
 
-			System.out.println("Got new Task: " + currentTask);
-
 		} else {
-			System.out.println("Current Task is not null: " + currentTask);
 
 			if (currentTask.isAtLocation(this)) {
-
-				System.out.println("At Task Location");
 
 				currentTask.doWork(getMillisSinceLastUpdate());
 
 				if (currentTask.isDone()) {
-
-					System.out.println(this + " has finished task " + currentTask);
-
+					
 					currentTask.finish();
 					currentTask = null;
 					pathfinder.removePathFor(this);
@@ -182,6 +177,8 @@ abstract public class Person extends UnlockedFromGrid {
 			}
 		}
 	}
+	
+	abstract public int getFoodCost();
 
 	abstract protected void doesntDoTasks();
 }
